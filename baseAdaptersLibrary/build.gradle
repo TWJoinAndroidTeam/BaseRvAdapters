@@ -20,6 +20,7 @@ afterEvaluate {
 }
 
 android {
+    namespace 'com.example.baservadapters'
     compileSdk 32
 
     defaultConfig {
