@@ -48,7 +48,7 @@ abstract class CheckBoxAdapter<VB : ViewBinding, CB : ICheckBox>(
         }
     }
 
-    suspend fun setData(checkBoxList: MutableList<CB>) {
+    open suspend fun setData(checkBoxList: MutableList<CB>) {
         if (checkBoxList.isNotEmpty()) {
             selectCheckBoxMap.clear()
 
