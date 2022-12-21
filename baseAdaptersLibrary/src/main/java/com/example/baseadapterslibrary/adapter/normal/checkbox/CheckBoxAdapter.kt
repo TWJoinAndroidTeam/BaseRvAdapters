@@ -48,7 +48,7 @@ abstract class CheckBoxAdapter<VB : ViewBinding, CB : ICheckBox>(
         }
     }
 
-    internal open suspend fun setData(checkBoxList: MutableList<CB>) {
+    suspend fun setData(checkBoxList: MutableList<CB>) {
         if (checkBoxList.isNotEmpty()) {
             selectCheckBoxMap.clear()
 
@@ -61,7 +61,7 @@ abstract class CheckBoxAdapter<VB : ViewBinding, CB : ICheckBox>(
         }
     }
 
-    suspend fun updateDataSet(newDataSet: MutableList<CB>) = withContext(Dispatchers.Default) {
+    internal open suspend fun updateDataSet(newDataSet: MutableList<CB>) = withContext(Dispatchers.Default) {
 
         val diff = getDiffWay(newDataSet)
         checkBoxList.clear()

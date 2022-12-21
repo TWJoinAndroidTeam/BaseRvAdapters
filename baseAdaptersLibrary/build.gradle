@@ -13,7 +13,7 @@ afterEvaluate {
                 from components.release
                 groupId = 'com.example.baseadapterslibrary'
                 artifactId = 'baseRvAdapters'
-                version = '1.0.3'
+                version = '1.0.4'
             }
         }
     }
