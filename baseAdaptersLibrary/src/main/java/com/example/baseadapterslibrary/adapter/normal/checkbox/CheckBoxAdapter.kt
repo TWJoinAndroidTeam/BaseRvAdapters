@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.example.checkboxadapterlibrary.extension.changeCheck
 import com.example.baseadapterslibrary.baseAdaptersLibrary.module.ICheckBox
+import com.example.baseadapterslibrary.extension.addOrReplace
 import com.example.baseadapterslibrary.module.ChooserMode
 import com.example.baseadapterslibrary.module.ICheckBoxSetting
 import kotlinx.coroutines.Dispatchers
@@ -25,6 +26,8 @@ abstract class CheckBoxAdapter<VB : ViewBinding, CB : ICheckBox>(
     abstract val chooserMode: ChooserMode
 
     var selectCheckBoxMap = mutableMapOf<Int, CB>()
+
+    protected var selectCheckBoxMutiHaveSortList = mutableListOf<Pair<Int, CB>>()
 
     protected var checkBoxList: MutableList<CB> = mutableListOf()
 
@@ -61,7 +64,7 @@ abstract class CheckBoxAdapter<VB : ViewBinding, CB : ICheckBox>(
         }
     }
 
-    internal open suspend fun updateDataSet(newDataSet: MutableList<CB>) = withContext(Dispatchers.Default) {
+    internal open suspend fun updateDataSet(newDataSet: MutableList<CB>) = withContext(Dispatchers.Main) {
 
         val diff = getDiffWay(newDataSet)
         checkBoxList.clear()
@@ -111,6 +114,10 @@ abstract class CheckBoxAdapter<VB : ViewBinding, CB : ICheckBox>(
 
         if (chooserMode is ChooserMode.SingleChoice) {
             if (!(chooserMode as ChooserMode.SingleChoice).canRemoveSelect && cb.isCheck) return
+        } else if (chooserMode is ChooserMode.MultipleResponse && selectCheckBoxMutiHaveSortList.size >= (chooserMode as ChooserMode.MultipleResponse).selectLimit) {
+            val firstSelectCB = selectCheckBoxMutiHaveSortList.removeFirst()
+            firstSelectCB.second.changeCheck()
+            setClickLogic(firstSelectCB.second.isCheck, firstSelectCB.first, firstSelectCB.second)
         }
 
         cb.changeCheck()
@@ -127,6 +134,7 @@ abstract class CheckBoxAdapter<VB : ViewBinding, CB : ICheckBox>(
             is ChooserMode.MultipleResponse -> {
                 if (isSelect) {
                     selectCheckBoxMap[position] = cb
+                    selectCheckBoxMutiHaveSortList.addOrReplace(position, Pair(position, cb))
                 } else {
                     selectCheckBoxMap.remove(position)
                 }

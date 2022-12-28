@@ -20,7 +20,7 @@ abstract class BaseRvAdapter<VB : ViewBinding, DATA>(
 
     open var dataList: MutableList<DATA> = mutableListOf()
 
-    open suspend fun updateDataSet(newDataSet: MutableList<DATA>) = withContext(Dispatchers.Default) {
+    open suspend fun updateDataSet(newDataSet: MutableList<DATA>) = withContext(Dispatchers.Main) {
         val diff = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
             override fun getOldListSize(): Int {
                 return dataList.size
