@@ -4,6 +4,7 @@
     package="com.example.baservadapters">
 
     <application
+        android:name=".MyApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -11,21 +12,20 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.BaseRvAdapters"
+        android:theme="@style/Theme.MaterialComponents.NoActionBar"
         tools:targetApi="31">
-
-
         <activity
             android:name=".activity.MainActivity"
             android:configChanges="orientation"
+            android:theme="@style/FullScreenTheme"
             android:exported="true"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustPan">
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.LAUNCHER" />
-                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
 

@@ -4,10 +4,11 @@ plugins {
 }
 
 android {
+    namespace 'com.example.baservadapters'
     compileSdk 32
 
     defaultConfig {
-        applicationId "com.example.baseadapterslibrary"
+        applicationId "com.example.baservadapters"
         minSdk 24
         targetSdk 32
         versionCode 1
@@ -22,6 +23,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -56,4 +58,6 @@ dependencies {
     //coroutine
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4"
+
+    implementation project(path: ':baseAdaptersLibrary')
 }

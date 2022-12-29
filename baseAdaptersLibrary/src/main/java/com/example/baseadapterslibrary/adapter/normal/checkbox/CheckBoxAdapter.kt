@@ -2,6 +2,7 @@ package com.example.baseadapterslibrary.adapter.normal.checkbox
 
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -9,13 +10,16 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.example.checkboxadapterlibrary.extension.changeCheck
 import com.example.baseadapterslibrary.baseAdaptersLibrary.module.ICheckBox
-import com.example.baseadapterslibrary.extension.addOrReplace
 import com.example.baseadapterslibrary.module.ChooserMode
 import com.example.baseadapterslibrary.module.ICheckBoxSetting
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 typealias Inflate<T> = (LayoutInflater, ViewGroup?, Boolean) -> T
+
+typealias SortListIndex = Int
+
+typealias RealDataPosition = Int
 
 abstract class CheckBoxAdapter<VB : ViewBinding, CB : ICheckBox>(
     val inflate: Inflate<VB>,
@@ -27,7 +31,8 @@ abstract class CheckBoxAdapter<VB : ViewBinding, CB : ICheckBox>(
 
     var selectCheckBoxMap = mutableMapOf<Int, CB>()
 
-    protected var selectCheckBoxMutiHaveSortList = mutableListOf<Pair<Int, CB>>()
+    protected var selectCheckBoxMultiHaveSortList = mutableListOf<Pair<RealDataPosition, CB>>()
+    protected var selectCheckBoxMultiHaveSortMap = mutableMapOf<RealDataPosition, SortListIndex>()
 
     protected var checkBoxList: MutableList<CB> = mutableListOf()
 
@@ -114,10 +119,15 @@ abstract class CheckBoxAdapter<VB : ViewBinding, CB : ICheckBox>(
 
         if (chooserMode is ChooserMode.SingleChoice) {
             if (!(chooserMode as ChooserMode.SingleChoice).canRemoveSelect && cb.isCheck) return
-        } else if (chooserMode is ChooserMode.MultipleResponse && selectCheckBoxMutiHaveSortList.size >= (chooserMode as ChooserMode.MultipleResponse).selectLimit) {
-            val firstSelectCB = selectCheckBoxMutiHaveSortList.removeFirst()
-            firstSelectCB.second.changeCheck()
-            setClickLogic(firstSelectCB.second.isCheck, firstSelectCB.first, firstSelectCB.second)
+        } else if (!cb.isCheck && chooserMode is ChooserMode.MultipleResponse && selectCheckBoxMultiHaveSortList.size >= ((chooserMode as? ChooserMode.MultipleResponse)?.selectLimit
+                ?: Int.MAX_VALUE)
+        ) {
+            if ((chooserMode as? ChooserMode.MultipleResponse)?.canRemoveAlreadySelect != true) return
+            val firstSelectCB = selectCheckBoxMultiHaveSortList.first()
+            if (firstSelectCB != cb) {
+                firstSelectCB.second.changeCheck()
+                setClickLogic(false, firstSelectCB.first, firstSelectCB.second)
+            }
         }
 
         cb.changeCheck()
@@ -133,10 +143,27 @@ abstract class CheckBoxAdapter<VB : ViewBinding, CB : ICheckBox>(
         when (chooserMode) {
             is ChooserMode.MultipleResponse -> {
                 if (isSelect) {
+
                     selectCheckBoxMap[position] = cb
-                    selectCheckBoxMutiHaveSortList.addOrReplace(position, Pair(position, cb))
+                    if ((chooserMode as ChooserMode.MultipleResponse).selectLimit != null) {
+                        selectCheckBoxMultiHaveSortList.add(Pair(position, cb))
+                        selectCheckBoxMultiHaveSortMap[position] = selectCheckBoxMultiHaveSortList.lastIndex
+                        Log.e("indexAdd", selectCheckBoxMultiHaveSortList.lastIndex.toString())
+                    }
                 } else {
                     selectCheckBoxMap.remove(position)
+                    val index = selectCheckBoxMultiHaveSortMap[position]
+
+                    if (index != null) {
+
+                        Log.e("indexRemove", index.toString())
+                        selectCheckBoxMultiHaveSortList.removeAt(index)
+
+
+                        for (i in selectCheckBoxMultiHaveSortList.indices) {
+                            selectCheckBoxMultiHaveSortMap[selectCheckBoxMultiHaveSortList[i].first] = i
+                        }
+                    }
                 }
 
                 checkBoxList[position] = cb

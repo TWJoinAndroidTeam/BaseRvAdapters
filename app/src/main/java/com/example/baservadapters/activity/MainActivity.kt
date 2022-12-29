@@ -2,8 +2,8 @@ package com.example.baservadapters.activity
 
 import android.os.Bundle
 import android.os.PersistableBundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.baseadapterslibrary.adapter.normal.checkbox.CheckBoxAdapter
@@ -22,19 +22,23 @@ class MainActivity : AppCompatActivity() {
 
     private val testSize = 10
 
-    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
-        super.onCreate(savedInstanceState, persistentState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        Log.e("???","create")
 
         viewBinding = ActivityMainBinding.inflate(layoutInflater)
+
+        setContentView(viewBinding.root)
 
         initRv()
 
         setData()
-
-        setContentView(viewBinding.root)
     }
 
     private fun initRv() {
+
+        Log.e("???","initRv")
 
         viewBinding.rv.apply {
             layoutManager = LinearLayoutManager(context)

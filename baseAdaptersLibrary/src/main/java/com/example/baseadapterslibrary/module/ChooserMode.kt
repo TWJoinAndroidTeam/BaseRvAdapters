@@ -11,5 +11,5 @@ sealed class ChooserMode {
      *多選
      * @param selectLimit 選擇上限
      */
-    class MultipleResponse(val selectLimit: Int = Int.MAX_VALUE) : ChooserMode()
+    class MultipleResponse(val selectLimit: Int? = null, val canRemoveAlreadySelect: Boolean) : ChooserMode()
 }
