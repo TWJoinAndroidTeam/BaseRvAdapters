@@ -10,7 +10,7 @@ import com.example.baservadapters.databinding.ItemCheckboxBinding
 class TestCheckBoxAdapter : CheckBoxAdapter<ItemCheckboxBinding, CheckBoxModel<Int>>(ItemCheckboxBinding::inflate) {
 
     override val chooserMode: ChooserMode
-        get() = ChooserMode.MultipleResponse(3,true)
+        get() = ChooserMode.MultipleResponse(Pair(3,true))
 
     override fun createHolder(binding: ItemCheckboxBinding, viewHolder: RecyclerView.ViewHolder) {
 
