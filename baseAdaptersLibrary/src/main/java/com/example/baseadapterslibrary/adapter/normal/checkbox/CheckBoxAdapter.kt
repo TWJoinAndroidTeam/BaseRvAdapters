@@ -119,10 +119,10 @@ abstract class CheckBoxAdapter<VB : ViewBinding, CB : ICheckBox>(
 
         if (chooserMode is ChooserMode.SingleChoice) {
             if (!(chooserMode as ChooserMode.SingleChoice).canRemoveSelect && cb.isCheck) return
-        } else if (!cb.isCheck && chooserMode is ChooserMode.MultipleResponse && selectCheckBoxMultiHaveSortList.size >= ((chooserMode as? ChooserMode.MultipleResponse)?.selectLimit
+        } else if (!cb.isCheck && chooserMode is ChooserMode.MultipleResponse && selectCheckBoxMultiHaveSortList.size >= ((chooserMode as? ChooserMode.MultipleResponse)?.selectLimitOption?.first
                 ?: Int.MAX_VALUE)
         ) {
-            if ((chooserMode as? ChooserMode.MultipleResponse)?.canRemoveAlreadySelect != true) return
+            if ((chooserMode as? ChooserMode.MultipleResponse)?.selectLimitOption?.second != true) return
             val firstSelectCB = selectCheckBoxMultiHaveSortList.first()
             if (firstSelectCB != cb) {
                 firstSelectCB.second.changeCheck()
@@ -145,7 +145,7 @@ abstract class CheckBoxAdapter<VB : ViewBinding, CB : ICheckBox>(
                 if (isSelect) {
 
                     selectCheckBoxMap[position] = cb
-                    if ((chooserMode as ChooserMode.MultipleResponse).selectLimit != null) {
+                    if ((chooserMode as ChooserMode.MultipleResponse).selectLimitOption != null) {
                         selectCheckBoxMultiHaveSortList.add(Pair(position, cb))
                         selectCheckBoxMultiHaveSortMap[position] = selectCheckBoxMultiHaveSortList.lastIndex
                         Log.e("indexAdd", selectCheckBoxMultiHaveSortList.lastIndex.toString())

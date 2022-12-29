@@ -1,5 +1,19 @@
 package com.example.baseadapterslibrary.module
 
+
+/**
+ * 選擇上限數值
+ */
+typealias SelectLimit = Int
+
+/**
+ * 選滿後是否能選更多
+ */
+typealias CanOverSelect = Boolean
+
+typealias SelectLimitOption = Pair<SelectLimit, CanOverSelect>
+
+
 sealed class ChooserMode {
     /**
      *單選
@@ -9,7 +23,8 @@ sealed class ChooserMode {
 
     /**
      *多選
-     * @param selectLimit 選擇上限
+     * @param selectLimitOption 選擇上限設定
+     *
      */
-    class MultipleResponse(val selectLimit: Int? = null, val canRemoveAlreadySelect: Boolean) : ChooserMode()
+    class MultipleResponse(val selectLimitOption: SelectLimitOption? = null) : ChooserMode()
 }
