@@ -1,17 +1,17 @@
 package com.example.baservadapters.activity
 
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.baseadapterslibrary.adapter.normal.checkbox.CheckBoxAdapter
 import com.example.baseadapterslibrary.baseAdaptersLibrary.module.CheckBoxModel
 import com.example.baservadapters.databinding.ActivityMainBinding
 import com.example.baservadapters.databinding.ItemCheckboxBinding
 import com.example.baservadapters.util.DimensionUtil
-import com.fpcc.formosa.common.view.recyclerview_decoration.RvDecoration
+import com.example.baseadapterslibrary.recyclerview_decoration.RvDecoration
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        Log.e("???","create")
+        Log.e("???", "create")
 
         viewBinding = ActivityMainBinding.inflate(layoutInflater)
 
@@ -38,16 +38,16 @@ class MainActivity : AppCompatActivity() {
 
     private fun initRv() {
 
-        Log.e("???","initRv")
+        Log.e("???", "initRv")
 
         viewBinding.rv.apply {
-            layoutManager = LinearLayoutManager(context)
+//            layoutManager = LinearLayoutManager(context)
+            layoutManager = GridLayoutManager(context, 3, LinearLayoutManager.VERTICAL, false)
             addItemDecoration(
                 RvDecoration(
-                    topMargin = DimensionUtil.dp2px(10),
-                    bottomMargin = DimensionUtil.dp2px(10),
-                    rightMargin = DimensionUtil.dp2px(20),
-                    leftMargin = DimensionUtil.dp2px(20)
+                    horizontalSpace = DimensionUtil.dp2px(8),
+                    verticalSpace = DimensionUtil.dp2px(8),
+                    margin = DimensionUtil.dp2px(16)
                 )
             )
             testAdapter = TestCheckBoxAdapter()

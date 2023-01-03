@@ -1,4 +1,4 @@
-package com.fpcc.formosa.common.view.recyclerview_decoration
+package com.example.baseadapterslibrary.recyclerview_decoration
 
 import android.graphics.Canvas
 import android.graphics.Path
@@ -8,29 +8,10 @@ import android.view.View
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 
 
-/**
- *@param horizontalSpace;  整个RecyclerView与左右两侧的间距
- *@param verticalSpace;  整个RecyclerView与上下的间距
- *@param leftMargin;  每个item与左边的间距
- *@param topMargin;  每个item与顶部的间距
- *@param rightMargin;  每个item与右边的间距
- *@param bottomMargin;  每个item与底部的间距
- *@param firstItemMargin 第一筆item與螢幕間距
- *@param lastItemMargin 最後一筆item與螢幕間距
- */
-class RvDecoration(
-    val horizontalSpace: Int = 0,
-    val verticalSpace: Int = 0,
-    val leftMargin: Int = 0,
-    val topMargin: Int = 0,
-    val rightMargin: Int = 0,
-    val bottomMargin: Int = 0,
-    var radius: Float = 0f,
-    var firstItemMargin: Int? = null,
-    var lastItemMargin: Int? = null,
-) : RecyclerView.ItemDecoration() {
+class RvDecoration() : RecyclerView.ItemDecoration() {
 
     private var defaultRectToClip: RectF? = null
 
@@ -38,22 +19,79 @@ class RvDecoration(
         defaultRectToClip = RectF(Float.MAX_VALUE, Float.MAX_VALUE, 0f, 0f)
     }
 
-    override fun getItemOffsets(
-        outRect: Rect,
-        view: View,
-        parent: RecyclerView,
-        state: RecyclerView.State,
-    ) {
-        super.getItemOffsets(outRect, view, parent, state)
 
-        val position: Int = parent.getChildAdapterPosition(view)
+    // 每个item左右两侧的间距
+    private var horizontalSpace = 0
+
+    // 每个item上下的间距
+    private var verticalSpace = 0
+
+    // 整个RecyclerView的左间距
+    private var leftMargin = 0
+
+    // 整个RecyclerView的顶部间距
+    private var topMargin = 0
+
+    // 整个RecyclerView的右间距
+    private var rightMargin = 0
+
+    // 整个RecyclerView的底部间距
+    private var bottomMargin = 0
+
+    var radius: Float = 0f
+
+
+    /**
+     *  @param horizontalSpace 每个item左右两侧的间距
+     *  @param verticalSpace 每个item上下的间距
+     */
+    constructor (horizontalSpace: Int, verticalSpace: Int, radius: Float = 0f) : this() {
+        initSpace(horizontalSpace, verticalSpace, 0, 0, 0, 0, radius)
+    }
+
+
+    /**
+     *  @param horizontalSpace 每个item左右两侧的间距
+     *  @param verticalSpace 每个item上下的间距
+     *  @param margin 整個rv的最外側間距
+     */
+    constructor(horizontalSpace: Int, verticalSpace: Int, margin: Int, radius: Float = 0f) : this() {
+        initSpace(horizontalSpace, verticalSpace, margin, margin, margin, margin, radius)
+    }
+
+    /**
+     *  @param horizontalSpace 每個item左右兩側的間距
+     *  @param verticalSpace 每個item上下的間距
+     *  @param leftMargin 整個Recycler View的左間距
+     *  @param topMargin 整個Recycler View的頂部間距
+     *  @param rightMargin 整個Recycler View的右間距
+     *  @param bottomMargin 整個Recycler View的底部間距
+     *  @param radius 原角度數
+     */
+    constructor(horizontalSpace: Int, verticalSpace: Int, leftMargin: Int, topMargin: Int, rightMargin: Int, bottomMargin: Int, radius: Float = 0f) : this() {
+        initSpace(horizontalSpace, verticalSpace, leftMargin, topMargin, rightMargin, bottomMargin, radius)
+    }
+
+    private fun initSpace(horizontalSpace: Int, verticalSpace: Int, leftMargin: Int, topMargin: Int, rightMargin: Int, bottomMargin: Int, radius: Float = 0f) {
+        this.horizontalSpace = horizontalSpace
+        this.verticalSpace = verticalSpace
+        this.leftMargin = leftMargin
+        this.topMargin = topMargin
+        this.rightMargin = rightMargin
+        this.bottomMargin = bottomMargin
+        this.radius = radius
+    }
+
+    override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
+        super.getItemOffsets(outRect, view, parent, state)
+        // 得到当前Item在RecyclerView中的位置,从0开始
+        val position = parent.getChildAdapterPosition(view)
         // 得到RecyclerView中Item的总个数
         val count = parent.adapter!!.itemCount
-
         if (parent.layoutManager is GridLayoutManager) { // 网格布局
-            val gridLayoutManager = parent.layoutManager as GridLayoutManager
+            val gridLayoutManager = parent.layoutManager as GridLayoutManager?
             // 得到网格布局的列数
-            val spanCount: Int = gridLayoutManager.spanCount
+            val spanCount = gridLayoutManager!!.spanCount
             // 判断该网格布局是水平还是垂直
             if (LinearLayoutManager.VERTICAL == gridLayoutManager.orientation) { // 垂直
                 if (spanCount == 1) { // 列数为1
@@ -69,12 +107,14 @@ class RvDecoration(
                 }
             }
         } else if (parent.layoutManager is LinearLayoutManager) { // 线性布局
-            val layoutManager: LinearLayoutManager = parent.layoutManager as LinearLayoutManager
-            if (LinearLayoutManager.VERTICAL == layoutManager.orientation) { // 垂直
+            val layoutManager = parent.layoutManager as LinearLayoutManager?
+            if (LinearLayoutManager.VERTICAL == layoutManager!!.orientation) { // 垂直
                 verticalColumnOne(outRect, position, count)
             } else if (LinearLayoutManager.HORIZONTAL == layoutManager.orientation) { // 水平
                 horizontalColumnOne(outRect, position, count)
             }
+        } else if (parent.layoutManager is StaggeredGridLayoutManager) { // 流布局
+            //TODO 瀑布流布局相关
         }
     }
 
@@ -86,16 +126,12 @@ class RvDecoration(
      * @param count    RecyclerView中Item的总个数
      */
     private fun verticalColumnOne(outRect: Rect, position: Int, count: Int) {
-        when (position) {
-            0 -> { // 位置为0时(即第一个Item)，不设置底部间距
-                outRect.set(leftMargin, firstItemMargin ?: (topMargin / 2), rightMargin, if (position==count -1) lastItemMargin ?: (bottomMargin / 2) else bottomMargin/2)
-            }
-            count - 1 -> { // 最后一个Item
-                outRect.set(leftMargin, topMargin/2, rightMargin, lastItemMargin ?: (bottomMargin / 2))
-            }
-            else -> { // 中间的Item，不设置底部间距
-                outRect.set(leftMargin, topMargin/2, rightMargin, bottomMargin/2)
-            }
+        if (position == 0) { // 位置为0时(即第一个Item)，不设置底部间距
+            outRect[leftMargin, topMargin, rightMargin] = 0
+        } else if (position == count - 1) { // 最后一个Item
+            outRect[leftMargin, verticalSpace, rightMargin] = bottomMargin
+        } else { // 中间的Item，不设置底部间距
+            outRect[leftMargin, verticalSpace, rightMargin] = 0
         }
     }
 
@@ -112,8 +148,7 @@ class RvDecoration(
         val totalRow = count / spanCount + if (count % spanCount == 0) 0 else 1
         // 计算得出当前view所在的行
         val row = position / spanCount
-        // 通过对position加1对spanCount取余得到column
-        // 保证column等于1为第一列，等于0为最后一个，其它值为中间列
+
         val column = (position + 1) % spanCount
         if (column == 1) {
             outRect.set(
@@ -148,13 +183,11 @@ class RvDecoration(
      */
     private fun horizontalColumnOne(outRect: Rect, position: Int, count: Int) {
         if (position == 0) { // 位置为0时(即第一个Item)
-            val firstMargin = if (firstItemMargin != null) firstItemMargin!! else leftMargin
-            outRect.set(firstMargin, topMargin, rightMargin / 2, bottomMargin)
+            outRect[leftMargin, topMargin, horizontalSpace / 2] = bottomMargin
         } else if (position == count - 1) { // 最后一个Item
-            val lastMargin = if (lastItemMargin != null) lastItemMargin!! else rightMargin
-            outRect.set(leftMargin / 2, topMargin, lastMargin, bottomMargin)
+            outRect[horizontalSpace / 2, topMargin, rightMargin] = bottomMargin
         } else { // 中间的Item
-            outRect.set(leftMargin / 2, topMargin, rightMargin / 2, bottomMargin)
+            outRect[horizontalSpace / 2, topMargin, horizontalSpace / 2] = bottomMargin
         }
     }
 
