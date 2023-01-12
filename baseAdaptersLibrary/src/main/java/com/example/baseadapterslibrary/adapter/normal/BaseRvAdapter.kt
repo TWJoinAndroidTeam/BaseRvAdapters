@@ -49,6 +49,12 @@ abstract class BaseRvAdapter<VB : ViewBinding, DATA>(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseBindHolder {
         if (!::context.isInitialized) context = parent.context
 
+        return getViewHolder(parent, viewType).apply {
+            createHolder(binding as VB, this)
+        }
+    }
+
+    protected open fun getViewHolder(parent: ViewGroup, viewType: Int): BaseBindHolder {
         return BaseBindHolder(
             inflate.invoke(
                 LayoutInflater.from(parent.context),
@@ -56,7 +62,6 @@ abstract class BaseRvAdapter<VB : ViewBinding, DATA>(
                 false
             )
         )
-
     }
 
     override fun onBindViewHolder(
@@ -99,6 +104,7 @@ abstract class BaseRvAdapter<VB : ViewBinding, DATA>(
 //        notifyItemRangeChanged(dataList.indices.last, dataList.size)
     }
 
+    abstract fun createHolder(binding: VB, viewHolder: RecyclerView.ViewHolder)
     abstract fun bind(binding: VB, item: DATA, bindingAdapterPosition: Int, viewHolder: BaseBindHolder)
     abstract fun partBind(payload: Any, binding: VB, item: DATA, bindingAdapterPosition: Int, viewHolder: BaseBindHolder)
 

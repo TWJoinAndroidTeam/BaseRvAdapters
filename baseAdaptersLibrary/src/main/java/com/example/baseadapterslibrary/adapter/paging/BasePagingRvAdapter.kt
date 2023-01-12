@@ -27,6 +27,12 @@ abstract class BasePagingRvAdapter<VB : ViewBinding, DATA : Any>(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LifecycleOwnerBindHolder {
         if (!::context.isInitialized) context = parent.context
+        return getViewHolder(parent, viewType).apply {
+            createHolder(binding as VB, this)
+        }
+    }
+
+    protected open fun getViewHolder(parent: ViewGroup, viewType: Int): LifecycleOwnerBindHolder {
         return LifecycleOwnerBindHolder(
             inflate.invoke(
                 LayoutInflater.from(parent.context),
@@ -51,7 +57,8 @@ abstract class BasePagingRvAdapter<VB : ViewBinding, DATA : Any>(
                         payload,
                         holder.binding as VB,
                         data,
-                        position)
+                        position
+                    )
                 }
             }
         }
@@ -76,6 +83,7 @@ abstract class BasePagingRvAdapter<VB : ViewBinding, DATA : Any>(
 
     abstract fun bind(binding: VB, item: DATA, position: Int)
     abstract fun partBind(payload: Any, binding: VB, item: DATA, position: Int)
+    abstract fun createHolder(binding: VB, viewHolder: RecyclerView.ViewHolder)
 
 }
 
