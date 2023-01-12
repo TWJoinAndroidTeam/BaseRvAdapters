@@ -27,6 +27,8 @@ abstract class CheckBoxAdapter<VB : ViewBinding, CB : ICheckBox>(
 
     lateinit var context: Context
 
+    val isContextInitialized get() = this::context.isInitialized
+
     abstract val chooserMode: ChooserMode
 
     var selectCheckBoxMap = mutableMapOf<Int, CB>()
@@ -43,7 +45,7 @@ abstract class CheckBoxAdapter<VB : ViewBinding, CB : ICheckBox>(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CheckBoxBindHolder {
-        if (!::context.isInitialized) context = parent.context
+        if (!isContextInitialized) context = parent.context
 
         return getViewHolder(parent, viewType).apply {
             createHolder(binding as VB, this)

@@ -13,8 +13,10 @@ abstract class BasePagingLoadStateAdapter<VB : ViewBinding>(private val inflate:
 
     lateinit var context: Context
 
+    val isContextInitialized get() = this::context.isInitialized
+
     override fun onCreateViewHolder(parent: ViewGroup, loadState: LoadState): LifecycleOwnerBindHolder {
-        if (!::context.isInitialized) context = parent.context
+        if (!isContextInitialized) context = parent.context
         return getViewHolder(parent, loadState).apply {
             createHolder(binding as VB, this)
         }

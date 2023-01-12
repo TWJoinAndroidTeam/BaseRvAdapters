@@ -18,6 +18,8 @@ abstract class BasePagingWithPinHeaderRvAdapter<HeaderVB : ViewBinding, ItemVB :
 
     lateinit var context: Context
 
+    val isContextInitialized get() = this::context.isInitialized
+
 
     companion object {
         const val TYPE_HEADER = 0
@@ -34,7 +36,7 @@ abstract class BasePagingWithPinHeaderRvAdapter<HeaderVB : ViewBinding, ItemVB :
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LifecycleOwnerBindHolder {
-        if (!::context.isInitialized) context = parent.context
+        if (!isContextInitialized) context = parent.context
 
         when (viewType) {
             TYPE_HEADER ->

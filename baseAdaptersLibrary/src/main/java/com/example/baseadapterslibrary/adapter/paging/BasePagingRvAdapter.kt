@@ -19,6 +19,8 @@ abstract class BasePagingRvAdapter<VB : ViewBinding, DATA : Any>(
 
     lateinit var context: Context
 
+    val isContextInitialized get() = this::context.isInitialized
+
     internal var onItemClickListener: ((DATA, position: Int) -> Unit)? = null
 
     fun setOnItemClickListener(listener: (DATA, position: Int) -> Unit) {
@@ -26,7 +28,7 @@ abstract class BasePagingRvAdapter<VB : ViewBinding, DATA : Any>(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LifecycleOwnerBindHolder {
-        if (!::context.isInitialized) context = parent.context
+        if (!isContextInitialized) context = parent.context
         return getViewHolder(parent, viewType).apply {
             createHolder(binding as VB, this)
         }

@@ -20,6 +20,8 @@ abstract class BaseRvAdapter<VB : ViewBinding, DATA>(
 
     open var dataList: MutableList<DATA> = mutableListOf()
 
+    val isContextInitialized get() = this::context.isInitialized
+
     open suspend fun updateDataSet(newDataSet: MutableList<DATA>) = withContext(Dispatchers.Main) {
         val diff = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
             override fun getOldListSize(): Int {
@@ -47,7 +49,7 @@ abstract class BaseRvAdapter<VB : ViewBinding, DATA>(
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseBindHolder {
-        if (!::context.isInitialized) context = parent.context
+        if (!isContextInitialized) context = parent.context
 
         return getViewHolder(parent, viewType).apply {
             createHolder(binding as VB, this)

@@ -77,7 +77,9 @@ abstract class BaseHeadOrFooterRvAdapter<VB : ViewBinding, DATA>(private val inf
                 BaseBindHolder(getFooterView(parent)!!)
             }
 
-            else -> BaseBindHolder(inflate.invoke(LayoutInflater.from(parent.context), parent, false))
+            else -> BaseBindHolder(inflate.invoke(LayoutInflater.from(parent.context), parent, false)).apply {
+                createHolder(binding as VB, this)
+            }
         }
 
     }
