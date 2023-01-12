@@ -49,16 +49,19 @@ abstract class BaseRvAdapter<VB : ViewBinding, DATA>(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseBindHolder {
         if (!::context.isInitialized) context = parent.context
 
+        return getViewHolder(parent, viewType).apply {
+            createHolder(binding as VB, this)
+        }
+    }
+
+    protected open fun getViewHolder(parent: ViewGroup, viewType: Int): BaseBindHolder {
         return BaseBindHolder(
             inflate.invoke(
                 LayoutInflater.from(parent.context),
                 parent,
                 false
             )
-        ).apply {
-            createHolder(binding as VB, this)
-        }
-
+        )
     }
 
     override fun onBindViewHolder(

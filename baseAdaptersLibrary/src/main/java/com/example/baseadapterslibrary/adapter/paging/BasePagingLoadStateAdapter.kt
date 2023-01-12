@@ -15,15 +15,19 @@ abstract class BasePagingLoadStateAdapter<VB : ViewBinding>(private val inflate:
 
     override fun onCreateViewHolder(parent: ViewGroup, loadState: LoadState): LifecycleOwnerBindHolder {
         if (!::context.isInitialized) context = parent.context
+        return getViewHolder(parent, loadState).apply {
+            createHolder(binding as VB, this)
+        }
+    }
+
+    protected open fun getViewHolder(parent: ViewGroup, loadState: LoadState): LifecycleOwnerBindHolder {
         return LifecycleOwnerBindHolder(
             inflate.invoke(
                 LayoutInflater.from(parent.context),
                 parent,
                 false
             )
-        ).apply {
-            createHolder(binding as VB, this)
-        }
+        )
     }
 
     override fun onBindViewHolder(holder: LifecycleOwnerBindHolder, loadState: LoadState) {

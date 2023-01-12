@@ -27,15 +27,19 @@ abstract class BasePagingRvAdapter<VB : ViewBinding, DATA : Any>(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LifecycleOwnerBindHolder {
         if (!::context.isInitialized) context = parent.context
+        return getViewHolder(parent, viewType).apply {
+            createHolder(binding as VB, this)
+        }
+    }
+
+    protected open fun getViewHolder(parent: ViewGroup, viewType: Int): LifecycleOwnerBindHolder {
         return LifecycleOwnerBindHolder(
             inflate.invoke(
                 LayoutInflater.from(parent.context),
                 parent,
                 false
             )
-        ).apply {
-            createHolder(binding as VB, this)
-        }
+        )
     }
 
     override fun onBindViewHolder(

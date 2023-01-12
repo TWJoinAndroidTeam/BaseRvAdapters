@@ -45,15 +45,19 @@ abstract class CheckBoxAdapter<VB : ViewBinding, CB : ICheckBox>(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CheckBoxBindHolder {
         if (!::context.isInitialized) context = parent.context
 
+        return getViewHolder(parent, viewType).apply {
+            createHolder(binding as VB, this)
+        }
+    }
+
+    protected open fun getViewHolder(parent: ViewGroup, viewType: Int): CheckBoxBindHolder {
         return CheckBoxBindHolder(
             inflate.invoke(
                 LayoutInflater.from(parent.context),
                 parent,
                 false
             )
-        ).apply {
-            createHolder(binding as VB, this)
-        }
+        )
     }
 
     open suspend fun setData(checkBoxList: MutableList<CB>) {
