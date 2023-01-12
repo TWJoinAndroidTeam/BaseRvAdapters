@@ -55,7 +55,9 @@ abstract class BaseRvAdapter<VB : ViewBinding, DATA>(
                 parent,
                 false
             )
-        )
+        ).apply {
+            createHolder(binding as VB, this)
+        }
 
     }
 
@@ -99,6 +101,7 @@ abstract class BaseRvAdapter<VB : ViewBinding, DATA>(
 //        notifyItemRangeChanged(dataList.indices.last, dataList.size)
     }
 
+    abstract fun createHolder(binding: VB, viewHolder: RecyclerView.ViewHolder)
     abstract fun bind(binding: VB, item: DATA, bindingAdapterPosition: Int, viewHolder: BaseBindHolder)
     abstract fun partBind(payload: Any, binding: VB, item: DATA, bindingAdapterPosition: Int, viewHolder: BaseBindHolder)
 

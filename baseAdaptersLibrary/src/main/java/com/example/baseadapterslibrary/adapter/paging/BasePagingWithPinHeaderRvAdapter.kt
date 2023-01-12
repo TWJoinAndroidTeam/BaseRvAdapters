@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.example.baseadapterslibrary.adapter.normal.checkbox.Inflate
 import com.example.baseadapterslibrary.module.IHeaderAdapterSetting
@@ -43,7 +44,9 @@ abstract class BasePagingWithPinHeaderRvAdapter<HeaderVB : ViewBinding, ItemVB :
                         parent,
                         false
                     )
-                )
+                ).apply {
+                    createHeaderHolder(binding as HeaderVB, this)
+                }
 
             else -> {
                 return ItemViewHolder(
@@ -52,7 +55,9 @@ abstract class BasePagingWithPinHeaderRvAdapter<HeaderVB : ViewBinding, ItemVB :
                         parent,
                         false
                     )
-                )
+                ).apply {
+                    createItemHolder(binding as ItemVB, this)
+                }
             }
         }
     }
@@ -111,8 +116,11 @@ abstract class BasePagingWithPinHeaderRvAdapter<HeaderVB : ViewBinding, ItemVB :
 
     abstract fun bindHeader(binding: HeaderVB, item: DATA, position: Int)
     abstract fun partBindHeader(payload: Any, binding: HeaderVB, item: DATA, position: Int)
+    abstract fun createHeaderHolder(binding: HeaderVB, viewHolder: RecyclerView.ViewHolder)
+
     abstract fun bindItem(binding: ItemVB, item: DATA, position: Int)
     abstract fun partBindItem(payload: Any, binding: ItemVB, item: DATA, position: Int)
+    abstract fun createItemHolder(binding: ItemVB, viewHolder: RecyclerView.ViewHolder)
 
 
     inner class HeaderViewHolder(binding: ViewBinding) : LifecycleOwnerBindHolder(binding)

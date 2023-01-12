@@ -33,7 +33,9 @@ abstract class BasePagingRvAdapter<VB : ViewBinding, DATA : Any>(
                 parent,
                 false
             )
-        )
+        ).apply {
+            createHolder(binding as VB, this)
+        }
     }
 
     override fun onBindViewHolder(
@@ -51,7 +53,8 @@ abstract class BasePagingRvAdapter<VB : ViewBinding, DATA : Any>(
                         payload,
                         holder.binding as VB,
                         data,
-                        position)
+                        position
+                    )
                 }
             }
         }
@@ -76,6 +79,7 @@ abstract class BasePagingRvAdapter<VB : ViewBinding, DATA : Any>(
 
     abstract fun bind(binding: VB, item: DATA, position: Int)
     abstract fun partBind(payload: Any, binding: VB, item: DATA, position: Int)
+    abstract fun createHolder(binding: VB, viewHolder: RecyclerView.ViewHolder)
 
 }
 
