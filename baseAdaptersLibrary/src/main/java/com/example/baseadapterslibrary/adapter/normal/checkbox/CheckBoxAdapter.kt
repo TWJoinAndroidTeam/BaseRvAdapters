@@ -17,13 +17,11 @@ import kotlinx.coroutines.withContext
 
 typealias Inflate<T> = (LayoutInflater, ViewGroup?, Boolean) -> T
 
-typealias SortListIndex = Int
+private typealias SortListIndex = Int
 
-typealias RealDataPosition = Int
+private typealias RealDataPosition = Int
 
-abstract class CheckBoxAdapter<VB : ViewBinding, CB : ICheckBox>(
-    val inflate: Inflate<VB>,
-) : RecyclerView.Adapter<CheckBoxAdapter.CheckBoxBindHolder>(), ICheckBoxSetting<CB> {
+abstract class CheckBoxAdapter<VB : ViewBinding, CB : ICheckBox> : RecyclerView.Adapter<CheckBoxAdapter.CheckBoxBindHolder>(), ICheckBoxSetting<CB> {
 
     lateinit var context: Context
 
@@ -40,6 +38,8 @@ abstract class CheckBoxAdapter<VB : ViewBinding, CB : ICheckBox>(
 
     private var onItemClickListener: ((CB, position: Int) -> Unit)? = null
 
+    abstract fun getViewBindingInflate(viewType: Int): Inflate<VB>
+
     fun setOnItemClickListener(listener: (CB, position: Int) -> Unit) {
         onItemClickListener = listener
     }
@@ -52,14 +52,9 @@ abstract class CheckBoxAdapter<VB : ViewBinding, CB : ICheckBox>(
         }
     }
 
+
     protected open fun getViewHolder(parent: ViewGroup, viewType: Int): CheckBoxBindHolder {
-        return CheckBoxBindHolder(
-            inflate.invoke(
-                LayoutInflater.from(parent.context),
-                parent,
-                false
-            )
-        )
+        return CheckBoxBindHolder(getViewBindingInflate(viewType).invoke(LayoutInflater.from(parent.context), parent, false))
     }
 
     open suspend fun setData(checkBoxList: MutableList<CB>) {
@@ -125,12 +120,13 @@ abstract class CheckBoxAdapter<VB : ViewBinding, CB : ICheckBox>(
 
         if (chooserMode is ChooserMode.SingleChoice) {
             if (!(chooserMode as ChooserMode.SingleChoice).canRemoveSelect && cb.isCheck) return
-        } else if (!cb.isCheck && chooserMode is ChooserMode.MultipleResponse && selectCheckBoxMultiHaveSortList.size >= ((chooserMode as? ChooserMode.MultipleResponse)?.selectLimitOption?.first
-                ?: Int.MAX_VALUE)
+        } else if (!cb.isCheck && chooserMode is ChooserMode.MultipleResponse && selectCheckBoxMultiHaveSortList.size >= ((chooserMode as? ChooserMode.MultipleResponse)?.selectLimitOption?.first?.coerceAtLeast(
+                1
+            ) ?: Int.MAX_VALUE)
         ) {
             if ((chooserMode as? ChooserMode.MultipleResponse)?.selectLimitOption?.second != true) return
             val firstSelectCB = selectCheckBoxMultiHaveSortList.first()
-            if (firstSelectCB != cb) {
+            if ( firstSelectCB != cb) {
                 firstSelectCB.second.changeCheck()
                 setClickLogic(false, firstSelectCB.first, firstSelectCB.second)
             }
@@ -154,15 +150,13 @@ abstract class CheckBoxAdapter<VB : ViewBinding, CB : ICheckBox>(
                     if ((chooserMode as ChooserMode.MultipleResponse).selectLimitOption != null) {
                         selectCheckBoxMultiHaveSortList.add(Pair(position, cb))
                         selectCheckBoxMultiHaveSortMap[position] = selectCheckBoxMultiHaveSortList.lastIndex
-                        Log.e("indexAdd", selectCheckBoxMultiHaveSortList.lastIndex.toString())
+
                     }
                 } else {
                     selectCheckBoxMap.remove(position)
                     val index = selectCheckBoxMultiHaveSortMap[position]
 
                     if (index != null) {
-
-                        Log.e("indexRemove", index.toString())
                         selectCheckBoxMultiHaveSortList.removeAt(index)
 
 

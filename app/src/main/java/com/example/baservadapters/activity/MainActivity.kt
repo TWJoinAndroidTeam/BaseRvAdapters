@@ -18,7 +18,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var viewBinding: ActivityMainBinding
 
-    private var testAdapter: CheckBoxAdapter<ItemCheckboxBinding, CheckBoxModel<Int>>? = null
+    private var testAdapter: TestCheckBoxAdapter? = null
 
     private val testSize = 10
 

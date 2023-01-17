@@ -13,8 +13,8 @@ import com.example.baseadapterslibrary.adapter.paging.BasePagingRvAdapter
 import com.example.baseadapterslibrary.adapter.paging.LifecycleOwnerBindHolder
 
 abstract class CheckBoxPagingAdapter<VB : ViewBinding, CB : IPagingCheckBox>(
-    inflate: Inflate<VB>, diffCallback: DiffUtil.ItemCallback<CB>,
-) : BasePagingRvAdapter<VB, CB>(inflate, diffCallback), ICheckBoxSetting<CB> {
+    diffCallback: DiffUtil.ItemCallback<CB>,
+) : BasePagingRvAdapter<VB, CB>(diffCallback), ICheckBoxSetting<CB> {
 
     abstract val chooserMode: ChooserMode
 

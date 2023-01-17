@@ -12,15 +12,15 @@ import kotlinx.coroutines.withContext
 
 typealias Inflate<T> = (LayoutInflater, ViewGroup?, Boolean) -> T
 
-abstract class BaseRvAdapter<VB : ViewBinding, DATA>(
-    private val inflate: Inflate<VB>,
-) : RecyclerView.Adapter<BaseRvAdapter.BaseBindHolder>() {
+abstract class BaseRvAdapter<VB : ViewBinding, DATA> : RecyclerView.Adapter<BaseRvAdapter.BaseBindHolder>() {
 
     lateinit var context: Context
 
     open var dataList: MutableList<DATA> = mutableListOf()
 
     val isContextInitialized get() = this::context.isInitialized
+
+    abstract fun getViewBindingInflate(viewType: Int): Inflate<VB>
 
     open suspend fun updateDataSet(newDataSet: MutableList<DATA>) = withContext(Dispatchers.Main) {
         val diff = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
@@ -58,7 +58,7 @@ abstract class BaseRvAdapter<VB : ViewBinding, DATA>(
 
     protected open fun getViewHolder(parent: ViewGroup, viewType: Int): BaseBindHolder {
         return BaseBindHolder(
-            inflate.invoke(
+            getViewBindingInflate(viewType).invoke(
                 LayoutInflater.from(parent.context),
                 parent,
                 false

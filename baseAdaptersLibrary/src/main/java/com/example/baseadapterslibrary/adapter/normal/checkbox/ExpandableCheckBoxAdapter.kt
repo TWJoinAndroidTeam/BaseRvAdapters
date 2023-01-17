@@ -4,7 +4,7 @@ import androidx.viewbinding.ViewBinding
 import com.example.baseadapterslibrary.baseAdaptersLibrary.module.ExpandableCheckBoxModel
 import com.example.baseadapterslibrary.baseAdaptersLibrary.module.ExpandableICheckBox
 
-abstract class ExpandableCheckBoxAdapter<VB : ViewBinding, CB : ExpandableICheckBox>(private val needRememberDefaultUtilChange: Boolean, inflate: Inflate<VB>) : CheckBoxAdapter<VB, CB>(inflate) {
+abstract class ExpandableCheckBoxAdapter<VB : ViewBinding, CB : ExpandableICheckBox>(private val needRememberDefaultUtilChange: Boolean) : CheckBoxAdapter<VB, CB>() {
 
     private var isExpand = false
 

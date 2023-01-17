@@ -10,21 +10,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 
-abstract class BaseHeadOrFooterRvAdapter<VB : ViewBinding, DATA>(private val inflate: Inflate<VB>) : BaseRvAdapter<VB, DATA>(inflate) {
+abstract class BaseHeadOrFooterRvAdapter<VB : ViewBinding, DATA> : BaseRvAdapter<VB, DATA>() {
 
     companion object {
-        const val TYPE_HEADER = 1 //說明是帶有Header的
+        const val TYPE_HEADER = -1 //說明是帶有Header的
 
-        const val TYPE_FOOTER = 2 //說明是帶有Footer的
+        const val TYPE_FOOTER = -2 //說明是帶有Footer的
 
-        const val TYPE_BOTH_HEADER_AND_FOOTER = 3 //說明是帶有header和Footer的
-
-        const val TYPE_NORMAL = 4 //說明是不帶有header和footer的
+        const val TYPE_BOTH_HEADER_AND_FOOTER = -3 //說明是帶有header和Footer的
     }
-
-    //HeaderView和FooterView的get和set函式
-    var headerView: View? = null
-    var footerView: View? = null
 
     abstract val type: Int
 
@@ -69,6 +63,8 @@ abstract class BaseHeadOrFooterRvAdapter<VB : ViewBinding, DATA>(private val inf
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseBindHolder {
+        if (!isContextInitialized) context = parent.context
+
         return when (viewType) {
             TYPE_HEADER -> {
                 BaseBindHolder(getHeaderView(parent)!!)
@@ -77,7 +73,7 @@ abstract class BaseHeadOrFooterRvAdapter<VB : ViewBinding, DATA>(private val inf
                 BaseBindHolder(getFooterView(parent)!!)
             }
 
-            else -> BaseBindHolder(inflate.invoke(LayoutInflater.from(parent.context), parent, false)).apply {
+            else -> BaseBindHolder(getViewBindingInflate(viewType).invoke(LayoutInflater.from(parent.context), parent, false)).apply {
                 createHolder(binding as VB, this)
             }
         }
@@ -110,7 +106,7 @@ abstract class BaseHeadOrFooterRvAdapter<VB : ViewBinding, DATA>(private val inf
             else -> holder.bindingAdapterPosition
         }
 
-        if (getItemViewType(position) == TYPE_NORMAL) {
+        if (getNormalItemViewType(position) != null) {
             bind(holder.binding as VB, dataList[adapterPosition], dataList.indexOf(dataList[adapterPosition]), holder)
         } else return
     }
@@ -118,9 +114,6 @@ abstract class BaseHeadOrFooterRvAdapter<VB : ViewBinding, DATA>(private val inf
     @Override
     override fun getItemCount(): Int {
         return when (type) {
-            TYPE_NORMAL -> {
-                dataList.size
-            }
             TYPE_HEADER, TYPE_FOOTER -> {
                 if (dataList.isNotEmpty()) dataList.size + 1 else dataList.size
             }
@@ -141,7 +134,9 @@ abstract class BaseHeadOrFooterRvAdapter<VB : ViewBinding, DATA>(private val inf
             position == itemCount - 1 && (type == TYPE_FOOTER || type == TYPE_BOTH_HEADER_AND_FOOTER) -> { //最後一個,應該載入Footer
                 TYPE_FOOTER
             }
-            else -> TYPE_NORMAL
+            else -> getNormalItemViewType(position) ?: super.getItemViewType(position)
         }
     }
+
+    abstract fun getNormalItemViewType(position: Int): Int?
 }

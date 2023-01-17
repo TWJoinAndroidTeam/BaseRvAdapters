@@ -6,7 +6,7 @@ import com.example.baseadapterslibrary.module.IItemTouchHelper
 import com.example.baseadapterslibrary.module.OnStartDragListener
 import java.util.*
 
-abstract class BaseDraggableRvAdapter<VB : ViewBinding, DATA>(private val inflate: Inflate<VB>, internal open val onStartDragListener: OnStartDragListener) : BaseRvAdapter<VB, DATA>(inflate),
+abstract class BaseDraggableRvAdapter<VB : ViewBinding, DATA>(internal open val onStartDragListener: OnStartDragListener) : BaseRvAdapter<VB, DATA>(),
     IItemTouchHelper {
 
     private var onItemMoveListener: ((fromPosition: Int, toPosition: Int) -> Unit)? = null
