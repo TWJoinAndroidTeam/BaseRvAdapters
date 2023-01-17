@@ -14,7 +14,7 @@ import com.example.baseadapterslibrary.adapter.normal.checkbox.Inflate
 
 
 abstract class BasePagingRvAdapter<VB : ViewBinding, DATA : Any>(
-    private val inflate: Inflate<VB>, diffCallback: DiffUtil.ItemCallback<DATA>,
+    diffCallback: DiffUtil.ItemCallback<DATA>,
 ) : PagingDataAdapter<DATA, LifecycleOwnerBindHolder>(diffCallback) {
 
     lateinit var context: Context
@@ -22,6 +22,8 @@ abstract class BasePagingRvAdapter<VB : ViewBinding, DATA : Any>(
     val isContextInitialized get() = this::context.isInitialized
 
     internal var onItemClickListener: ((DATA, position: Int) -> Unit)? = null
+
+    abstract fun getViewBindingInflate(viewType: Int): Inflate<VB>
 
     fun setOnItemClickListener(listener: (DATA, position: Int) -> Unit) {
         onItemClickListener = listener
@@ -36,7 +38,7 @@ abstract class BasePagingRvAdapter<VB : ViewBinding, DATA : Any>(
 
     protected open fun getViewHolder(parent: ViewGroup, viewType: Int): LifecycleOwnerBindHolder {
         return LifecycleOwnerBindHolder(
-            inflate.invoke(
+            getViewBindingInflate(viewType).invoke(
                 LayoutInflater.from(parent.context),
                 parent,
                 false
@@ -83,9 +85,10 @@ abstract class BasePagingRvAdapter<VB : ViewBinding, DATA : Any>(
         holder.detachToWindow()
     }
 
+    abstract fun createHolder(binding: VB, viewHolder: RecyclerView.ViewHolder)
     abstract fun bind(binding: VB, item: DATA, position: Int)
     abstract fun partBind(payload: Any, binding: VB, item: DATA, position: Int)
-    abstract fun createHolder(binding: VB, viewHolder: RecyclerView.ViewHolder)
+
 
 }
 

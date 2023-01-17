@@ -9,11 +9,13 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.example.baseadapterslibrary.adapter.normal.checkbox.Inflate
 
-abstract class BasePagingLoadStateAdapter<VB : ViewBinding>(private val inflate: Inflate<VB>) : LoadStateAdapter<LifecycleOwnerBindHolder>() {
+abstract class BasePagingLoadStateAdapter<VB : ViewBinding> : LoadStateAdapter<LifecycleOwnerBindHolder>() {
 
     lateinit var context: Context
 
     val isContextInitialized get() = this::context.isInitialized
+
+    abstract fun getViewBindingInflate(loadState: LoadState): Inflate<VB>
 
     override fun onCreateViewHolder(parent: ViewGroup, loadState: LoadState): LifecycleOwnerBindHolder {
         if (!isContextInitialized) context = parent.context
@@ -24,7 +26,7 @@ abstract class BasePagingLoadStateAdapter<VB : ViewBinding>(private val inflate:
 
     protected open fun getViewHolder(parent: ViewGroup, loadState: LoadState): LifecycleOwnerBindHolder {
         return LifecycleOwnerBindHolder(
-            inflate.invoke(
+            getViewBindingInflate(loadState).invoke(
                 LayoutInflater.from(parent.context),
                 parent,
                 false

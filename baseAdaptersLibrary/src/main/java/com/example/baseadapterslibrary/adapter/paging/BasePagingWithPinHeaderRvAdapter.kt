@@ -12,7 +12,6 @@ import com.example.baseadapterslibrary.module.IHeaderAdapterSetting
 
 abstract class BasePagingWithPinHeaderRvAdapter<HeaderVB : ViewBinding, ItemVB : ViewBinding, DATA : Any>(
     private val headerVBInflate: Inflate<HeaderVB>,
-    private val itemVBInflate: Inflate<ItemVB>,
     diffCallback: DiffUtil.ItemCallback<DATA>,
 ) : PagingDataAdapter<DATA, LifecycleOwnerBindHolder>(diffCallback), IHeaderAdapterSetting {
 
@@ -20,18 +19,17 @@ abstract class BasePagingWithPinHeaderRvAdapter<HeaderVB : ViewBinding, ItemVB :
 
     val isContextInitialized get() = this::context.isInitialized
 
+    abstract fun getViewBindingInflate(viewType: Int): Inflate<ItemVB>
 
     companion object {
-        const val TYPE_HEADER = 0
-
-        const val TYPE_ITEM = 1
+        const val TYPE_HEADER = -1
     }
 
     override fun getItemViewType(position: Int): Int {
         return if (isHeader(position)) {
             TYPE_HEADER
         } else {
-            TYPE_ITEM
+            super.getItemViewType(position)
         }
     }
 
@@ -52,7 +50,7 @@ abstract class BasePagingWithPinHeaderRvAdapter<HeaderVB : ViewBinding, ItemVB :
 
             else -> {
                 return ItemViewHolder(
-                    itemVBInflate.invoke(
+                    getViewBindingInflate(viewType).invoke(
                         LayoutInflater.from(parent.context),
                         parent,
                         false

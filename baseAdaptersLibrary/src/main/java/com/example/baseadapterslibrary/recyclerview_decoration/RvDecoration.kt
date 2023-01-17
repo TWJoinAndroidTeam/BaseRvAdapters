@@ -4,6 +4,7 @@ import android.graphics.Canvas
 import android.graphics.Path
 import android.graphics.Rect
 import android.graphics.RectF
+import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -13,11 +14,7 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 
 class RvDecoration() : RecyclerView.ItemDecoration() {
 
-    private var defaultRectToClip: RectF? = null
-
-    init {
-        defaultRectToClip = RectF(Float.MAX_VALUE, Float.MAX_VALUE, 0f, 0f)
-    }
+    private var defaultRectToClip: RectF = RectF(Float.MAX_VALUE, Float.MAX_VALUE, 0f, 0f)
 
 
     // 每个item左右两侧的间距
@@ -253,6 +250,7 @@ class RvDecoration() : RecyclerView.ItemDecoration() {
         otherRect.top = otherRect.bottom
         otherRect.bottom = maxBottom
         val path = Path()
+        Log.e("????!",radius.toString())
         path.addRoundRect(roundRect, radius, radius, Path.Direction.CW)
         path.addRect(otherRect, Path.Direction.CW)
         c.clipPath(path)
