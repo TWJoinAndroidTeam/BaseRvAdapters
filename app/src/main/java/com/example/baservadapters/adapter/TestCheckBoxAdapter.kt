@@ -1,4 +1,4 @@
-package com.example.baservadapters.activity
+package com.example.baservadapters.adapter
 
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView

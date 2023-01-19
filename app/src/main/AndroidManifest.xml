@@ -15,20 +15,41 @@
         android:theme="@style/Theme.MaterialComponents.NoActionBar"
         tools:targetApi="31">
         <activity
-            android:name=".activity.MainActivity"
+            android:name=".activity.CheckBoxActivity"
             android:configChanges="orientation"
-            android:theme="@style/FullScreenTheme"
             android:exported="true"
             android:launchMode="singleTop"
-            android:screenOrientation="portrait"
+            android:theme="@style/FullScreenTheme"
+            android:windowSoftInputMode="stateHidden|adjustPan">
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".activity.MainActivity"
+            android:configChanges="orientation"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:theme="@style/FullScreenTheme"
             android:windowSoftInputMode="stateHidden|adjustPan">
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+        <activity
+            android:name=".activity.HeaderOrFooterActivity"
+            android:configChanges="orientation"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:theme="@style/FullScreenTheme"
+            android:windowSoftInputMode="stateHidden|adjustPan">
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

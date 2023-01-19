@@ -1,11 +1,9 @@
 package com.example.baseadapterslibrary.adapter.normal
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.viewbinding.ViewBinding
-import com.example.baseadapterslibrary.adapter.normal.checkbox.Inflate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -16,11 +14,9 @@ abstract class BaseHeadOrFooterRvAdapter<VB : ViewBinding, DATA> : BaseRvAdapter
         const val TYPE_HEADER = -1 //說明是帶有Header的
 
         const val TYPE_FOOTER = -2 //說明是帶有Footer的
-
-        const val TYPE_BOTH_HEADER_AND_FOOTER = -3 //說明是帶有header和Footer的
     }
 
-    abstract val type: Int
+    abstract val type: HeaderOrFooterRVType
 
     abstract fun getHeaderView(parent: ViewGroup): ViewBinding?
 
@@ -55,11 +51,11 @@ abstract class BaseHeadOrFooterRvAdapter<VB : ViewBinding, DATA> : BaseRvAdapter
     }
 
     private fun setFooter() {
-        if (type == TYPE_BOTH_HEADER_AND_FOOTER || type == TYPE_FOOTER) notifyItemInserted(itemCount - 1)
+        if (type == HeaderOrFooterRVType.HeaderAndFooter || type == HeaderOrFooterRVType.Footer) notifyItemInserted(itemCount - 1)
     }
 
     private fun setHeader() {
-        if (type == TYPE_BOTH_HEADER_AND_FOOTER || type == TYPE_FOOTER) notifyItemInserted(0)
+        if (type == HeaderOrFooterRVType.HeaderAndFooter || type == HeaderOrFooterRVType.Header) notifyItemInserted(0)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseBindHolder {
@@ -81,44 +77,60 @@ abstract class BaseHeadOrFooterRvAdapter<VB : ViewBinding, DATA> : BaseRvAdapter
     }
 
     override fun onBindViewHolder(holder: BaseBindHolder, position: Int, payloads: MutableList<Any>) {
-        val adapterPosition = when (type) {
-            TYPE_BOTH_HEADER_AND_FOOTER, TYPE_HEADER -> holder.bindingAdapterPosition - 1
-            else -> holder.bindingAdapterPosition
-        }
-        if (payloads.isEmpty()) {
-            super.onBindViewHolder(holder, position, payloads)
-        } else {
-            for (payload in payloads) {
-                partBind(
-                    payload,
-                    holder.binding as VB,
-                    dataList[adapterPosition],
-                    dataList.indexOf(dataList[adapterPosition]),
-                    holder
-                )
+        when (getItemViewType(position)) {
+            TYPE_FOOTER -> return
+            TYPE_HEADER -> return
+            else -> {
+                val adapterPosition = when (type) {
+                    HeaderOrFooterRVType.Footer -> holder.bindingAdapterPosition
+                    HeaderOrFooterRVType.Header -> holder.bindingAdapterPosition - 1
+                    else -> holder.bindingAdapterPosition - 1
+                }
+
+
+                if (payloads.isEmpty()) {
+                    super.onBindViewHolder(holder, adapterPosition, payloads)
+                } else {
+                    for (payload in payloads) {
+                        partBind(
+                            payload,
+                            holder.binding as VB,
+                            dataList[adapterPosition],
+                            dataList.indexOf(dataList[adapterPosition]),
+                            holder
+                        )
+                    }
+                }
             }
         }
     }
 
     override fun onBindViewHolder(holder: BaseBindHolder, position: Int) {
-        val adapterPosition = when (type) {
-            TYPE_BOTH_HEADER_AND_FOOTER, TYPE_HEADER -> holder.bindingAdapterPosition - 1
-            else -> holder.bindingAdapterPosition
-        }
 
-        if (getNormalItemViewType(position) != null) {
-            bind(holder.binding as VB, dataList[adapterPosition], dataList.indexOf(dataList[adapterPosition]), holder)
-        } else return
+
+        when (getItemViewType(holder.bindingAdapterPosition)) {
+            TYPE_FOOTER -> return
+            TYPE_HEADER -> return
+            else -> {
+                val adapterPosition = when (type) {
+                    HeaderOrFooterRVType.Footer -> holder.bindingAdapterPosition
+                    HeaderOrFooterRVType.Header -> holder.bindingAdapterPosition - 1
+                    else -> holder.bindingAdapterPosition - 1
+                }
+
+                bind(holder.binding as VB, dataList[adapterPosition], dataList.indexOf(dataList[adapterPosition]), holder)
+            }
+        }
     }
 
     @Override
     override fun getItemCount(): Int {
         return when (type) {
-            TYPE_HEADER, TYPE_FOOTER -> {
-                if (dataList.isNotEmpty()) dataList.size + 1 else dataList.size
+            HeaderOrFooterRVType.Header, HeaderOrFooterRVType.Footer -> {
+                if (dataList.isNotEmpty()) dataList.size + 1 else 0
             }
             else -> {
-                if (dataList.isNotEmpty()) dataList.size + 2 else dataList.size
+                if (dataList.isNotEmpty()) dataList.size + 2 else 0
             }
         }
     }
@@ -128,10 +140,10 @@ abstract class BaseHeadOrFooterRvAdapter<VB : ViewBinding, DATA> : BaseRvAdapter
      **/
     override fun getItemViewType(position: Int): Int {
         return when {
-            position == 0 && (type == TYPE_HEADER || type == TYPE_BOTH_HEADER_AND_FOOTER) -> { //第一個item應該載入Header
+            position == 0 && (type == HeaderOrFooterRVType.Header || type == HeaderOrFooterRVType.HeaderAndFooter) -> { //第一個item應該載入Header
                 TYPE_HEADER
             }
-            position == itemCount - 1 && (type == TYPE_FOOTER || type == TYPE_BOTH_HEADER_AND_FOOTER) -> { //最後一個,應該載入Footer
+            position == itemCount - 1 && (type == HeaderOrFooterRVType.Footer || type == HeaderOrFooterRVType.HeaderAndFooter) -> { //最後一個,應該載入Footer
                 TYPE_FOOTER
             }
             else -> getNormalItemViewType(position) ?: super.getItemViewType(position)
@@ -139,4 +151,8 @@ abstract class BaseHeadOrFooterRvAdapter<VB : ViewBinding, DATA> : BaseRvAdapter
     }
 
     abstract fun getNormalItemViewType(position: Int): Int?
+}
+
+enum class HeaderOrFooterRVType {
+    Header, Footer, HeaderAndFooter
 }
