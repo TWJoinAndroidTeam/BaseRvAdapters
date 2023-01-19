@@ -66,7 +66,8 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 TYPE_CHECKBOX -> {
-
+                    val intent = Intent(this, CheckBoxActivity::class.java)
+                    startActivity(intent)
                 }
             }
         }

@@ -84,7 +84,7 @@ abstract class BaseHeadOrFooterRvAdapter<VB : ViewBinding, DATA> : BaseRvAdapter
                 val adapterPosition = when (type) {
                     HeaderOrFooterRVType.Footer -> holder.bindingAdapterPosition
                     HeaderOrFooterRVType.Header -> holder.bindingAdapterPosition - 1
-                    else -> holder.bindingAdapterPosition -1
+                    else -> holder.bindingAdapterPosition - 1
                 }
 
 
@@ -115,7 +115,7 @@ abstract class BaseHeadOrFooterRvAdapter<VB : ViewBinding, DATA> : BaseRvAdapter
                 val adapterPosition = when (type) {
                     HeaderOrFooterRVType.Footer -> holder.bindingAdapterPosition
                     HeaderOrFooterRVType.Header -> holder.bindingAdapterPosition - 1
-                    else -> holder.bindingAdapterPosition -1
+                    else -> holder.bindingAdapterPosition - 1
                 }
 
                 bind(holder.binding as VB, dataList[adapterPosition], dataList.indexOf(dataList[adapterPosition]), holder)
