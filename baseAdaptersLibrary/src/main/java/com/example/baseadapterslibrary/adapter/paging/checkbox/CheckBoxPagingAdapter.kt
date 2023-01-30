@@ -33,8 +33,9 @@ abstract class CheckBoxPagingAdapter<VB : ViewBinding, CB : IPagingCheckBox>(
         onCheckBoxClickListener = listener
     }
 
-    internal var onCheckBoxChangeSelectAllListener: ((MutableMap<Int, CB>, isSelectAll: Boolean) -> Unit)? = null
+    protected var onCheckBoxChangeSelectAllListener: ((MutableMap<Int, CB>, isSelectAll: Boolean) -> Unit)? = null
 
+    @JvmName("setOnCheckBoxChangeSelectAllListener1")
     fun setOnCheckBoxChangeSelectAllListener(listener: (MutableMap<Int, CB>, isSelectAll: Boolean) -> Unit) {
         onCheckBoxChangeSelectAllListener = listener
     }

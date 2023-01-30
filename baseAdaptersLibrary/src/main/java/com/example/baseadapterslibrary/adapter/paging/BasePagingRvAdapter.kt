@@ -21,10 +21,11 @@ abstract class BasePagingRvAdapter<VB : ViewBinding, DATA : Any>(
 
     val isContextInitialized get() = this::context.isInitialized
 
-    internal var onItemClickListener: ((DATA, position: Int) -> Unit)? = null
+    protected var onItemClickListener: ((DATA, position: Int) -> Unit)? = null
 
     abstract fun getViewBindingInflate(viewType: Int): Inflate<VB>
 
+    @JvmName("setOnItemClickListener1")
     fun setOnItemClickListener(listener: (DATA, position: Int) -> Unit) {
         onItemClickListener = listener
     }
