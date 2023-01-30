@@ -70,7 +70,7 @@ abstract class CheckBoxAdapter<VB : ViewBinding, CB : ICheckBox> : RecyclerView.
         }
     }
 
-    internal open suspend fun updateDataSet(newDataSet: MutableList<CB>) = withContext(Dispatchers.Main) {
+    protected open suspend fun updateDataSet(newDataSet: MutableList<CB>) = withContext(Dispatchers.Main) {
 
         val diff = getDiffWay(newDataSet)
         checkBoxList.clear()

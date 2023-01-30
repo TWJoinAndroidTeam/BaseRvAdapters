@@ -14,7 +14,9 @@ abstract class BaseDraggableRvAdapter<VB : ViewBinding, DATA>(internal open val 
         onItemMoveListener = listener
     }
 
-    internal var onItemDeleteListener: ((deletePosition: Int) -> Unit)? = null
+    protected var onItemDeleteListener: ((deletePosition: Int) -> Unit)? = null
+
+    @JvmName("setOnItemDeleteListener1")
     fun setOnItemDeleteListener(listener: (deletePosition: Int) -> Unit) {
         onItemDeleteListener = listener
     }
