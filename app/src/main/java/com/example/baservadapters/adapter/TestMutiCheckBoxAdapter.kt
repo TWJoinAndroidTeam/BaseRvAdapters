@@ -4,18 +4,15 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.baseadapterslibrary.adapter.normal.checkbox.CheckBoxAdapter
 import com.example.baseadapterslibrary.adapter.normal.checkbox.Inflate
-import com.example.baseadapterslibrary.baseAdaptersLibrary.module.CheckBoxModel
+import com.example.baseadapterslibrary.module.CheckBoxModel
 import com.example.baseadapterslibrary.module.ChooserMode
 import com.example.baservadapters.databinding.ItemCheckboxBinding
 
-class TestCheckBoxAdapter : CheckBoxAdapter<ItemCheckboxBinding, CheckBoxModel<Int>>() {
+class TestMutiCheckBoxAdapter(override val chooserMode: ChooserMode) : CheckBoxAdapter<ItemCheckboxBinding, CheckBoxModel<Int>>() {
 
     override fun getViewBindingInflate(viewType: Int): Inflate<ItemCheckboxBinding> {
         return ItemCheckboxBinding::inflate
     }
-
-    override val chooserMode: ChooserMode
-        get() = ChooserMode.MultipleResponse(Pair(3, true))
 
     override fun createHolder(binding: ItemCheckboxBinding, viewHolder: RecyclerView.ViewHolder) {
 

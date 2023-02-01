@@ -1,11 +1,15 @@
-package com.example.baseadapterslibrary.baseAdaptersLibrary.module
+package com.example.baseadapterslibrary.module
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 import kotlinx.parcelize.RawValue
 
-interface ICheckBox {
+interface ICheckBox : Cloneable {
     var isCheck: @RawValue Boolean
+
+    override fun clone(): Any {
+        return super.clone()
+    }
 }
 
 /**

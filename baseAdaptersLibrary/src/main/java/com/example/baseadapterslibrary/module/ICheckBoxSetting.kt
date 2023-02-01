@@ -1,7 +1,5 @@
 package com.example.baseadapterslibrary.module
 
-import com.example.baseadapterslibrary.baseAdaptersLibrary.module.ICheckBox
-
 interface ICheckBoxSetting<CB : ICheckBox> {
     /**
     全選

@@ -29,11 +29,9 @@ class HeaderOrFooterActivity : AppCompatActivity() {
     private val testSize = 20
 
     companion object {
-        const val TYPE_HEADER = "header"
-        const val TYPE_FOOTER = "footer"
-        const val TYPE_HEADER_AND_FOOTER = "header and footer"
-
-
+      private  const val TYPE_HEADER = "header"
+      private  const val TYPE_FOOTER = "footer"
+       private const val TYPE_HEADER_AND_FOOTER = "header and footer"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
