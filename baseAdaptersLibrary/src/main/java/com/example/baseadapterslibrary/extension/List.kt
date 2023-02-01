@@ -1,6 +1,5 @@
 package com.example.baseadapterslibrary.extension
 
-
 /**
  * 新增或重置List資料
  */
@@ -12,3 +11,4 @@ fun <E> MutableList<E>.addOrReplace(position: Int, e: E) {
         set(position, e)
     }
 }
+

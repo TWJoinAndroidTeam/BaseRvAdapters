@@ -5,20 +5,38 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.baseadapterslibrary.baseAdaptersLibrary.module.CheckBoxModel
+import com.example.baseadapterslibrary.module.CheckBoxModel
+import com.example.baseadapterslibrary.module.ChooserMode
+import com.example.baseadapterslibrary.module.SelectLimitOption
 import com.example.baseadapterslibrary.recyclerview_decoration.RvDecoration
-import com.example.baservadapters.adapter.TestCheckBoxAdapter
+import com.example.baservadapters.adapter.DemoRvAdapter
+import com.example.baservadapters.adapter.TestMutiCheckBoxAdapter
+import com.example.baservadapters.adapter.TestSingleCheckBoxAdapter
 import com.example.baservadapters.databinding.ActivityCheckBoxBinding
 import com.example.baservadapters.util.DimensionUtil
 import kotlinx.coroutines.launch
 
 class CheckBoxActivity : AppCompatActivity() {
 
-    private var testAdapter: TestCheckBoxAdapter? = null
+    companion object {
+        private const val TYPE_SINGLE = "single"
+        private const val TYPE_MUTI = "muti"
+        private const val TYPE_MUTI_MAX_3 = "max 3"
+    }
+
+    private var testSingleCheckBoxAdapter: TestSingleCheckBoxAdapter? = null
+
+    private var testMutiCheckBoxAdapter: TestMutiCheckBoxAdapter? = null
+
+    private var testMutiMaxThreeCheckBoxAdapter: TestMutiCheckBoxAdapter? = null
 
     private lateinit var viewBinding: ActivityCheckBoxBinding
 
+    private var itemTypeAdapter: DemoRvAdapter? = null
+
     private val testSize = 10
+
+    private val listOptions = mutableListOf("single", "muti", "max 3")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,8 +51,7 @@ class CheckBoxActivity : AppCompatActivity() {
     }
 
     private fun initRv() {
-        viewBinding.rv.apply {
-//            layoutManager = LinearLayoutManager(context)
+        viewBinding.rvMain.apply {
             layoutManager = GridLayoutManager(context, 3, LinearLayoutManager.VERTICAL, false)
             addItemDecoration(
                 RvDecoration(
@@ -43,21 +60,64 @@ class CheckBoxActivity : AppCompatActivity() {
                     margin = DimensionUtil.dp2px(16)
                 )
             )
-            testAdapter = TestCheckBoxAdapter()
-            adapter = testAdapter
+
+            testSingleCheckBoxAdapter = TestSingleCheckBoxAdapter()
+
+            testMutiCheckBoxAdapter = TestMutiCheckBoxAdapter(ChooserMode.MultipleResponse())
+
+            testMutiMaxThreeCheckBoxAdapter = TestMutiCheckBoxAdapter(ChooserMode.MultipleResponse(SelectLimitOption(3, true)))
+
+            adapter = testMutiMaxThreeCheckBoxAdapter
+        }
+
+        viewBinding.rvOption.apply {
+            layoutManager = GridLayoutManager(this@CheckBoxActivity, listOptions.size)
+            addItemDecoration(
+                RvDecoration(
+                    horizontalSpace = DimensionUtil.dp2px(8),
+                    verticalSpace = DimensionUtil.dp2px(8),
+                    margin = DimensionUtil.dp2px(16)
+                )
+            )
+
+            itemTypeAdapter = DemoRvAdapter()
+            adapter = itemTypeAdapter
+        }
+
+        itemTypeAdapter?.setOnClickListener {
+
+            when (listOptions[it]) {
+                TYPE_SINGLE -> {
+                    viewBinding.rvMain.adapter = testSingleCheckBoxAdapter
+                }
+
+                TYPE_MUTI -> {
+                    viewBinding.rvMain.adapter = testMutiCheckBoxAdapter
+                }
+
+                TYPE_MUTI_MAX_3 -> {
+                    viewBinding.rvMain.adapter = testMutiMaxThreeCheckBoxAdapter
+                }
+            }
         }
     }
 
     private fun setData() {
 
-        val testList = mutableListOf<CheckBoxModel<Int>>()
+        val testSingleList = mutableListOf<CheckBoxModel<Int>>()
+        val testMutiList = mutableListOf<CheckBoxModel<Int>>()
+
 
         for (i in 0 until testSize) {
-            testList.add(CheckBoxModel(i, false))
+            testMutiList.add(CheckBoxModel(i, i < 3))
+            testSingleList.add(CheckBoxModel(i, i == 1))
         }
 
         lifecycleScope.launch {
-            testAdapter?.setData(testList)
+            itemTypeAdapter?.updateDataSet(listOptions)
+            testSingleCheckBoxAdapter?.setData(testSingleList)
+            testMutiCheckBoxAdapter?.setData(testMutiList)
+            testMutiMaxThreeCheckBoxAdapter?.setData(testMutiList)
         }
     }
 }

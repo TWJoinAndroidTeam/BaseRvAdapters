@@ -1,8 +1,8 @@
 package com.example.baseadapterslibrary.adapter.normal.checkbox
 
 import androidx.viewbinding.ViewBinding
-import com.example.baseadapterslibrary.baseAdaptersLibrary.module.ExpandableCheckBoxModel
-import com.example.baseadapterslibrary.baseAdaptersLibrary.module.ExpandableICheckBox
+import com.example.baseadapterslibrary.module.ExpandableCheckBoxModel
+import com.example.baseadapterslibrary.module.ExpandableICheckBox
 
 abstract class ExpandableCheckBoxAdapter<VB : ViewBinding, CB : ExpandableICheckBox>(private val needRememberDefaultUtilChange: Boolean) : CheckBoxAdapter<VB, CB>() {
 
@@ -86,7 +86,7 @@ abstract class ExpandableCheckBoxAdapter<VB : ViewBinding, CB : ExpandableICheck
         realDataList.clear()
         realDataList.addAll(checkBoxList)
 
-        if (!checkBoxList.isNullOrEmpty()) {
+        if (checkBoxList.isNotEmpty()) {
             selectCheckBoxMap.clear()
 
             for (i in checkBoxList.indices) {

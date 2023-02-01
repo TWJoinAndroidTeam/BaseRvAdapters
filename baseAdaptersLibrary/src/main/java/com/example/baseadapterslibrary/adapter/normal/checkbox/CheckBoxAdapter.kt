@@ -2,14 +2,13 @@ package com.example.baseadapterslibrary.adapter.normal.checkbox
 
 
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.example.checkboxadapterlibrary.extension.changeCheck
-import com.example.baseadapterslibrary.baseAdaptersLibrary.module.ICheckBox
+import com.example.baseadapterslibrary.module.ICheckBox
 import com.example.baseadapterslibrary.module.ChooserMode
 import com.example.baseadapterslibrary.module.ICheckBoxSetting
 import kotlinx.coroutines.Dispatchers
@@ -29,9 +28,10 @@ abstract class CheckBoxAdapter<VB : ViewBinding, CB : ICheckBox> : RecyclerView.
 
     abstract val chooserMode: ChooserMode
 
-    var selectCheckBoxMap = mutableMapOf<Int, CB>()
+    protected var selectCheckBoxMap = mutableMapOf<Int, CB>()
 
     protected var selectCheckBoxMultiHaveSortList = mutableListOf<Pair<RealDataPosition, CB>>()
+
     protected var selectCheckBoxMultiHaveSortMap = mutableMapOf<RealDataPosition, SortListIndex>()
 
     protected var checkBoxList: MutableList<CB> = mutableListOf()
@@ -40,7 +40,7 @@ abstract class CheckBoxAdapter<VB : ViewBinding, CB : ICheckBox> : RecyclerView.
 
     abstract fun getViewBindingInflate(viewType: Int): Inflate<VB>
 
-    fun setOnItemClickListener(listener: (CB, position: Int) -> Unit) {
+    fun setOnItemClickListener( listener: (CB, position: Int) -> Unit) {
         onItemClickListener = listener
     }
 
@@ -52,7 +52,6 @@ abstract class CheckBoxAdapter<VB : ViewBinding, CB : ICheckBox> : RecyclerView.
         }
     }
 
-
     protected open fun getViewHolder(parent: ViewGroup, viewType: Int): CheckBoxBindHolder {
         return CheckBoxBindHolder(getViewBindingInflate(viewType).invoke(LayoutInflater.from(parent.context), parent, false))
     }
@@ -60,13 +59,16 @@ abstract class CheckBoxAdapter<VB : ViewBinding, CB : ICheckBox> : RecyclerView.
     open suspend fun setData(checkBoxList: MutableList<CB>) {
         if (checkBoxList.isNotEmpty()) {
             selectCheckBoxMap.clear()
+            selectCheckBoxMultiHaveSortList.clear()
+            selectCheckBoxMultiHaveSortMap.clear()
+
+            updateDataSet(checkBoxList)
 
             for (i in checkBoxList.indices) {
                 if (checkBoxList[i].isCheck) {
-                    selectCheckBoxMap[i] = checkBoxList[i]
+                    addSelectItem(i)
                 }
             }
-            updateDataSet(checkBoxList)
         }
     }
 
@@ -126,9 +128,9 @@ abstract class CheckBoxAdapter<VB : ViewBinding, CB : ICheckBox> : RecyclerView.
         ) {
             if ((chooserMode as? ChooserMode.MultipleResponse)?.selectLimitOption?.second != true) return
             val firstSelectCB = selectCheckBoxMultiHaveSortList.first()
-            if ( firstSelectCB != cb) {
+            if (firstSelectCB != cb) {
                 firstSelectCB.second.changeCheck()
-                setClickLogic(false, firstSelectCB.first, firstSelectCB.second)
+                setClickLogic(false, firstSelectCB.first)
             }
         }
 
@@ -136,59 +138,15 @@ abstract class CheckBoxAdapter<VB : ViewBinding, CB : ICheckBox> : RecyclerView.
 
         val isSelect = cb.isCheck
 
-        setClickLogic(isSelect, position, cb)
+        setClickLogic(isSelect, position)
 
         onItemClickListener?.invoke(cb, position)
     }
 
-    private fun setClickLogic(isSelect: Boolean, position: Int, cb: CB) {
-        when (chooserMode) {
-            is ChooserMode.MultipleResponse -> {
-                if (isSelect) {
+    private fun setClickLogic(isSelect: Boolean, position: Int) {
+        if (isSelect) addSelectItem(position) else removeSelectItem(position)
 
-                    selectCheckBoxMap[position] = cb
-                    if ((chooserMode as ChooserMode.MultipleResponse).selectLimitOption != null) {
-                        selectCheckBoxMultiHaveSortList.add(Pair(position, cb))
-                        selectCheckBoxMultiHaveSortMap[position] = selectCheckBoxMultiHaveSortList.lastIndex
-
-                    }
-                } else {
-                    selectCheckBoxMap.remove(position)
-                    val index = selectCheckBoxMultiHaveSortMap[position]
-
-                    if (index != null) {
-                        selectCheckBoxMultiHaveSortList.removeAt(index)
-
-
-                        for (i in selectCheckBoxMultiHaveSortList.indices) {
-                            selectCheckBoxMultiHaveSortMap[selectCheckBoxMultiHaveSortList[i].first] = i
-                        }
-                    }
-                }
-
-                checkBoxList[position] = cb
-                notifyItemChanged(position, isSelect)
-            }
-
-            is ChooserMode.SingleChoice -> {
-
-                if (isSelect) {
-                    selectCheckBoxMap.forEach {
-                        if (it.value.isCheck && position != it.key) {
-                            checkBoxList[it.key].changeCheck()
-                            selectCheckBoxMap.remove(it.key)
-                            notifyItemChanged(it.key, checkBoxList[it.key].isCheck)
-                        }
-                    }
-                    selectCheckBoxMap[position] = cb
-                    checkBoxList[position].isCheck = true
-                } else {
-                    selectCheckBoxMap.remove(position)
-                    checkBoxList[position].isCheck = false
-                }
-                notifyItemChanged(position, isSelect)
-            }
-        }
+        notifyItemChanged(position, isSelect)
     }
 
     /**
@@ -246,7 +204,7 @@ abstract class CheckBoxAdapter<VB : ViewBinding, CB : ICheckBox> : RecyclerView.
     取得所有被選擇項目的資料 Map
      */
     override fun getSelectDataMap(): MutableMap<Int, CB> {
-        return selectCheckBoxMap
+        return selectCheckBoxMap.toMutableMap()
     }
 
     abstract fun createHolder(binding: VB, viewHolder: RecyclerView.ViewHolder)
@@ -261,6 +219,62 @@ abstract class CheckBoxAdapter<VB : ViewBinding, CB : ICheckBox> : RecyclerView.
         notifyItemRemoved(position)
         notifyItemRangeChanged(position, checkBoxList.size)
     }
+
+    private fun addSelectItem(position: Int) {
+
+        val selectCB = checkBoxList[position]
+
+        when (chooserMode) {
+            is ChooserMode.MultipleResponse -> {
+
+                selectCheckBoxMap[position] = selectCB
+                if ((chooserMode as ChooserMode.MultipleResponse).selectLimitOption != null) {
+                    selectCheckBoxMultiHaveSortList.add(Pair(position, selectCB))
+                    selectCheckBoxMultiHaveSortMap[position] = selectCheckBoxMultiHaveSortList.lastIndex
+
+                }
+            }
+
+            is ChooserMode.SingleChoice -> {
+
+                selectCheckBoxMap.forEach {
+                    if (it.value.isCheck && position != it.key) {
+                        checkBoxList[it.key].changeCheck()
+                        removeSelectItem(it.key)
+                        notifyItemChanged(it.key, checkBoxList[it.key].isCheck)
+                    }
+                }
+                selectCheckBoxMap[position] = selectCB
+                checkBoxList[position].isCheck = true
+            }
+        }
+
+        checkBoxList[position].isCheck = true
+    }
+
+    private fun removeSelectItem(position: Int) {
+        when (chooserMode) {
+            is ChooserMode.MultipleResponse -> {
+
+                selectCheckBoxMap.remove(position)
+                val index = selectCheckBoxMultiHaveSortMap[position]
+
+                if (index != null) {
+                    selectCheckBoxMultiHaveSortList.removeAt(index)
+
+                    for (i in selectCheckBoxMultiHaveSortList.indices) {
+                        selectCheckBoxMultiHaveSortMap[selectCheckBoxMultiHaveSortList[i].first] = i
+                    }
+                }
+            }
+
+            is ChooserMode.SingleChoice -> {
+                selectCheckBoxMap.remove(position)
+            }
+        }
+        checkBoxList[position].isCheck = false
+    }
+
 
     open fun getDiffWay(newDataSet: MutableList<CB>): DiffUtil.DiffResult {
         return DiffUtil.calculateDiff(object : DiffUtil.Callback() {
