@@ -3,19 +3,17 @@ package com.example.baseadapterslibrary.adapter.paging
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LifecycleRegistry
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.example.baseadapterslibrary.adapter.normal.checkbox.Inflate
+import com.example.baseadapterslibrary.view_holder.LifecycleOwnerViewBindHolder
 
 
 abstract class BasePagingRvAdapter<VB : ViewBinding, DATA : Any>(
     diffCallback: DiffUtil.ItemCallback<DATA>,
-) : PagingDataAdapter<DATA, LifecycleOwnerBindHolder>(diffCallback) {
+) : PagingDataAdapter<DATA, LifecycleOwnerViewBindHolder>(diffCallback) {
 
     lateinit var context: Context
 
@@ -30,15 +28,15 @@ abstract class BasePagingRvAdapter<VB : ViewBinding, DATA : Any>(
         onItemClickListener = listener
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LifecycleOwnerBindHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LifecycleOwnerViewBindHolder {
         if (!isContextInitialized) context = parent.context
         return getViewHolder(parent, viewType).apply {
             createHolder(binding as VB, this)
         }
     }
 
-    protected open fun getViewHolder(parent: ViewGroup, viewType: Int): LifecycleOwnerBindHolder {
-        return LifecycleOwnerBindHolder(
+    protected open fun getViewHolder(parent: ViewGroup, viewType: Int): LifecycleOwnerViewBindHolder {
+        return LifecycleOwnerViewBindHolder(
             getViewBindingInflate(viewType).invoke(
                 LayoutInflater.from(parent.context),
                 parent,
@@ -48,7 +46,7 @@ abstract class BasePagingRvAdapter<VB : ViewBinding, DATA : Any>(
     }
 
     override fun onBindViewHolder(
-        holder: LifecycleOwnerBindHolder,
+        holder: LifecycleOwnerViewBindHolder,
         position: Int,
         payloads: MutableList<Any>,
     ) {
@@ -69,19 +67,19 @@ abstract class BasePagingRvAdapter<VB : ViewBinding, DATA : Any>(
         }
     }
 
-    override fun onBindViewHolder(holder: LifecycleOwnerBindHolder, position: Int) {
+    override fun onBindViewHolder(holder: LifecycleOwnerViewBindHolder, position: Int) {
         val data = getItem(position)
         if (data != null) {
             bind(holder.binding as VB, data, position)
         }
     }
 
-    override fun onViewAttachedToWindow(holder: LifecycleOwnerBindHolder) {
+    override fun onViewAttachedToWindow(holder: LifecycleOwnerViewBindHolder) {
         super.onViewAttachedToWindow(holder)
         holder.attachToWindow()
     }
 
-    override fun onViewDetachedFromWindow(holder: LifecycleOwnerBindHolder) {
+    override fun onViewDetachedFromWindow(holder: LifecycleOwnerViewBindHolder) {
         super.onViewDetachedFromWindow(holder)
         holder.detachToWindow()
     }
@@ -90,43 +88,5 @@ abstract class BasePagingRvAdapter<VB : ViewBinding, DATA : Any>(
     abstract fun bind(binding: VB, item: DATA, position: Int)
     abstract fun partBind(payload: Any, binding: VB, item: DATA, position: Int)
 
-
-}
-
-/**
- *繼承 LifecycleOwner ，讓view Holder 也能持有生命週期
- *
- *@property lifecycleRegistry view holder 生命週期管理者
- *@property paused 控制生命週期暫離與否
- */
-open class LifecycleOwnerBindHolder(val binding: ViewBinding) : RecyclerView.ViewHolder(binding.root), LifecycleOwner {
-    private val lifecycleRegistry = LifecycleRegistry(this)
-
-    private var paused: Boolean = false
-
-    init {
-        lifecycleRegistry.currentState = Lifecycle.State.INITIALIZED
-    }
-
-    fun lifecycleCreate() {
-        lifecycleRegistry.currentState = Lifecycle.State.CREATED
-    }
-
-    override fun getLifecycle(): Lifecycle {
-        return lifecycleRegistry
-    }
-
-    fun attachToWindow() {
-        if (paused) {
-            lifecycleRegistry.currentState = Lifecycle.State.RESUMED
-            paused = false
-        } else {
-            lifecycleRegistry.currentState = Lifecycle.State.STARTED
-        }
-    }
-
-    fun detachToWindow() {
-        paused = true
-    }
 
 }

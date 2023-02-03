@@ -6,6 +6,7 @@ import com.example.baseadapterslibrary.adapter.normal.checkbox.CheckBoxAdapter
 import com.example.baseadapterslibrary.adapter.normal.checkbox.Inflate
 import com.example.baseadapterslibrary.module.CheckBoxModel
 import com.example.baseadapterslibrary.module.ChooserMode
+import com.example.baseadapterslibrary.view_holder.BaseViewBindHolder
 import com.example.baservadapters.databinding.ItemCheckboxBinding
 
 class TestMutiCheckBoxAdapter(override val chooserMode: ChooserMode) : CheckBoxAdapter<ItemCheckboxBinding, CheckBoxModel<Int>>() {
@@ -18,7 +19,7 @@ class TestMutiCheckBoxAdapter(override val chooserMode: ChooserMode) : CheckBoxA
 
     }
 
-    override fun bind(binding: ItemCheckboxBinding, checkBox: CheckBoxModel<Int>, position: Int, viewHolder: CheckBoxBindHolder) {
+    override fun bind(binding: ItemCheckboxBinding, checkBox: CheckBoxModel<Int>, position: Int, viewHolder: BaseViewBindHolder) {
         binding.txtNumber.text = checkBox.item.toString()
         binding.root.setOnClickListener {
             onCheckBoxClick(checkBox, position)
@@ -33,5 +34,9 @@ class TestMutiCheckBoxAdapter(override val chooserMode: ChooserMode) : CheckBoxA
             binding.txtNumber.setTextColor(ContextCompat.getColor(context, android.R.color.black))
             binding.root.setBackgroundColor(ContextCompat.getColor(context, android.R.color.white))
         }
+    }
+
+    override fun partBind(payload: Any, binding: ItemCheckboxBinding, item: CheckBoxModel<Int>, bindingAdapterPosition: Int, viewHolder: BaseViewBindHolder) {
+
     }
 }

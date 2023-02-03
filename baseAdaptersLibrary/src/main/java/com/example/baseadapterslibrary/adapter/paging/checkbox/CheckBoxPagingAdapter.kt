@@ -5,11 +5,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.viewbinding.ViewBinding
+import com.example.baseadapterslibrary.adapter.paging.BasePagingRvAdapter
 import com.example.baseadapterslibrary.module.ChooserMode
 import com.example.baseadapterslibrary.module.ICheckBoxSetting
 import com.example.baseadapterslibrary.module.IPagingCheckBox
-import com.example.baseadapterslibrary.adapter.paging.BasePagingRvAdapter
-import com.example.baseadapterslibrary.adapter.paging.LifecycleOwnerBindHolder
+import com.example.baseadapterslibrary.view_holder.LifecycleOwnerViewBindHolder
 
 abstract class CheckBoxPagingAdapter<VB : ViewBinding, CB : IPagingCheckBox>(
     diffCallback: DiffUtil.ItemCallback<CB>,
@@ -168,13 +168,13 @@ abstract class CheckBoxPagingAdapter<VB : ViewBinding, CB : IPagingCheckBox>(
         return selectCheckBoxMap
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LifecycleOwnerBindHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LifecycleOwnerViewBindHolder {
         val holder = super.onCreateViewHolder(parent, viewType)
         holder.lifecycleCreate()
         return holder
     }
 
-    override fun onBindViewHolder(holder: LifecycleOwnerBindHolder, position: Int) {
+    override fun onBindViewHolder(holder: LifecycleOwnerViewBindHolder, position: Int) {
         super.onBindViewHolder(holder, position)
 
         val data = getItem(position)

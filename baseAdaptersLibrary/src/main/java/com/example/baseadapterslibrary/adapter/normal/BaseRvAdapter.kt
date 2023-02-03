@@ -7,12 +7,14 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
+import com.example.baseadapterslibrary.module.NormalRvLoadState
+import com.example.baseadapterslibrary.view_holder.BaseViewBindHolder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 typealias Inflate<T> = (LayoutInflater, ViewGroup?, Boolean) -> T
 
-abstract class BaseRvAdapter<VB : ViewBinding, DATA> : RecyclerView.Adapter<BaseRvAdapter.BaseBindHolder>() {
+abstract class BaseRvAdapter<VB : ViewBinding, DATA> : RecyclerView.Adapter<BaseViewBindHolder>() {
 
     lateinit var context: Context
 
@@ -22,33 +24,29 @@ abstract class BaseRvAdapter<VB : ViewBinding, DATA> : RecyclerView.Adapter<Base
 
     abstract fun getViewBindingInflate(viewType: Int): Inflate<VB>
 
+    private var loadStateListener: ((NormalRvLoadState) -> Unit)? = null
+
     open suspend fun updateDataSet(newDataSet: MutableList<DATA>) = withContext(Dispatchers.Main) {
-        val diff = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
-            override fun getOldListSize(): Int {
-                return dataList.size
-            }
 
-            override fun getNewListSize(): Int {
-                return newDataSet.size
-            }
+        loadStateListener?.invoke(NormalRvLoadState.NoData(false))
 
-            override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-                return oldItemPosition == newItemPosition
-            }
+        val diff = getDiffWay(newDataSet)
+        dataList.clear()
+        dataList.addAll(newDataSet)
 
-            override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-                return dataList[oldItemPosition] == newDataSet[newItemPosition]
-            }
-        })
+        if (dataList.isEmpty()) {
+            loadStateListener?.invoke(NormalRvLoadState.NoData(true))
+        } else {
+            loadStateListener?.invoke(NormalRvLoadState.HaveData)
+        }
 
         withContext(Dispatchers.Main) {
-            dataList = newDataSet
             diff.dispatchUpdatesTo(this@BaseRvAdapter)
         }
     }
 
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseBindHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewBindHolder {
         if (!isContextInitialized) context = parent.context
 
         return getViewHolder(parent, viewType).apply {
@@ -56,8 +54,8 @@ abstract class BaseRvAdapter<VB : ViewBinding, DATA> : RecyclerView.Adapter<Base
         }
     }
 
-    protected open fun getViewHolder(parent: ViewGroup, viewType: Int): BaseBindHolder {
-        return BaseBindHolder(
+    protected open fun getViewHolder(parent: ViewGroup, viewType: Int): BaseViewBindHolder {
+        return BaseViewBindHolder(
             getViewBindingInflate(viewType).invoke(
                 LayoutInflater.from(parent.context),
                 parent,
@@ -67,7 +65,7 @@ abstract class BaseRvAdapter<VB : ViewBinding, DATA> : RecyclerView.Adapter<Base
     }
 
     override fun onBindViewHolder(
-        holder: BaseBindHolder,
+        holder: BaseViewBindHolder,
         position: Int,
         payloads: MutableList<Any>,
     ) {
@@ -87,7 +85,7 @@ abstract class BaseRvAdapter<VB : ViewBinding, DATA> : RecyclerView.Adapter<Base
         }
     }
 
-    override fun onBindViewHolder(holder: BaseBindHolder, position: Int) {
+    override fun onBindViewHolder(holder: BaseViewBindHolder, position: Int) {
         val adapterPosition = holder.bindingAdapterPosition
         bind(holder.binding as VB, dataList[adapterPosition], dataList.indexOf(dataList[adapterPosition]), holder)
     }
@@ -106,9 +104,46 @@ abstract class BaseRvAdapter<VB : ViewBinding, DATA> : RecyclerView.Adapter<Base
 //        notifyItemRangeChanged(dataList.indices.last, dataList.size)
     }
 
-    abstract fun createHolder(binding: VB, viewHolder: RecyclerView.ViewHolder)
-    abstract fun bind(binding: VB, item: DATA, bindingAdapterPosition: Int, viewHolder: BaseBindHolder)
-    abstract fun partBind(payload: Any, binding: VB, item: DATA, bindingAdapterPosition: Int, viewHolder: BaseBindHolder)
 
-    class BaseBindHolder(val binding: ViewBinding) : RecyclerView.ViewHolder(binding.root)
+    abstract fun createHolder(binding: VB, viewHolder: RecyclerView.ViewHolder)
+    abstract fun bind(binding: VB, item: DATA, bindingAdapterPosition: Int, viewHolder: BaseViewBindHolder)
+    abstract fun partBind(payload: Any, binding: VB, item: DATA, bindingAdapterPosition: Int, viewHolder: BaseViewBindHolder)
+
+
+    open fun getDiffWay(newDataSet: MutableList<DATA>): DiffUtil.DiffResult {
+        return DiffUtil.calculateDiff(object : DiffUtil.Callback() {
+            override fun getOldListSize(): Int {
+                return dataList.size
+            }
+
+            override fun getNewListSize(): Int {
+                return newDataSet.size
+            }
+
+            override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+                val oldData = newDataSet.getOrNull(oldItemPosition)
+                val newData = dataList.getOrNull(newItemPosition)
+
+                return when {
+                    oldData == newData || newData == null -> false
+                    else -> oldData == newData
+                }
+            }
+
+            override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+
+                val oldData = newDataSet.getOrNull(oldItemPosition)
+                val newData = dataList.getOrNull(newItemPosition)
+
+                return when {
+                    oldData == newData || newData == null -> false
+                    else -> oldData == newData
+                }
+            }
+        })
+    }
+
+    fun setLoadStateAdapterListener(listener: (NormalRvLoadState) -> Unit) {
+        this.loadStateListener = listener
+    }
 }
