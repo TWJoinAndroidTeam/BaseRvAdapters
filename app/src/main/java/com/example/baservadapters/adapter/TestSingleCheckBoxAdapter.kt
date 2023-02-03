@@ -6,6 +6,7 @@ import com.example.baseadapterslibrary.adapter.normal.checkbox.CheckBoxAdapter
 import com.example.baseadapterslibrary.adapter.normal.checkbox.Inflate
 import com.example.baseadapterslibrary.module.CheckBoxModel
 import com.example.baseadapterslibrary.module.ChooserMode
+import com.example.baseadapterslibrary.view_holder.BaseViewBindHolder
 import com.example.baservadapters.databinding.ItemCheckboxBinding
 
 class TestSingleCheckBoxAdapter : CheckBoxAdapter<ItemCheckboxBinding, CheckBoxModel<Int>>() {
@@ -20,7 +21,7 @@ class TestSingleCheckBoxAdapter : CheckBoxAdapter<ItemCheckboxBinding, CheckBoxM
 
     }
 
-    override fun bind(binding: ItemCheckboxBinding, checkBox: CheckBoxModel<Int>, position: Int, viewHolder: CheckBoxBindHolder) {
+    override fun bind(binding: ItemCheckboxBinding, checkBox: CheckBoxModel<Int>, position: Int, viewHolder: BaseViewBindHolder) {
         binding.txtNumber.text = checkBox.item.toString()
         binding.root.setOnClickListener {
             onCheckBoxClick(checkBox, position)
@@ -35,5 +36,9 @@ class TestSingleCheckBoxAdapter : CheckBoxAdapter<ItemCheckboxBinding, CheckBoxM
             binding.txtNumber.setTextColor(ContextCompat.getColor(context, android.R.color.black))
             binding.root.setBackgroundColor(ContextCompat.getColor(context, android.R.color.white))
         }
+    }
+
+    override fun partBind(payload: Any, binding: ItemCheckboxBinding, item: CheckBoxModel<Int>, bindingAdapterPosition: Int, viewHolder: BaseViewBindHolder) {
+
     }
 }

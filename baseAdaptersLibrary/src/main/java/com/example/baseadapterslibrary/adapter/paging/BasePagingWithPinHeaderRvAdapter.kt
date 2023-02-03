@@ -9,11 +9,12 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.example.baseadapterslibrary.adapter.normal.checkbox.Inflate
 import com.example.baseadapterslibrary.module.IHeaderAdapterSetting
+import com.example.baseadapterslibrary.view_holder.LifecycleOwnerViewBindHolder
 
 abstract class BasePagingWithPinHeaderRvAdapter<HeaderVB : ViewBinding, ItemVB : ViewBinding, DATA : Any>(
     private val headerVBInflate: Inflate<HeaderVB>,
     diffCallback: DiffUtil.ItemCallback<DATA>,
-) : PagingDataAdapter<DATA, LifecycleOwnerBindHolder>(diffCallback), IHeaderAdapterSetting {
+) : PagingDataAdapter<DATA, LifecycleOwnerViewBindHolder>(diffCallback), IHeaderAdapterSetting {
 
     lateinit var context: Context
 
@@ -33,7 +34,7 @@ abstract class BasePagingWithPinHeaderRvAdapter<HeaderVB : ViewBinding, ItemVB :
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LifecycleOwnerBindHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LifecycleOwnerViewBindHolder {
         if (!isContextInitialized) context = parent.context
 
         when (viewType) {
@@ -62,7 +63,7 @@ abstract class BasePagingWithPinHeaderRvAdapter<HeaderVB : ViewBinding, ItemVB :
         }
     }
 
-    override fun onBindViewHolder(holder: LifecycleOwnerBindHolder, position: Int) {
+    override fun onBindViewHolder(holder: LifecycleOwnerViewBindHolder, position: Int) {
         val data = getItem(position)
         if (data != null) {
             when (holder) {
@@ -78,7 +79,7 @@ abstract class BasePagingWithPinHeaderRvAdapter<HeaderVB : ViewBinding, ItemVB :
     }
 
     override fun onBindViewHolder(
-        holder: LifecycleOwnerBindHolder,
+        holder: LifecycleOwnerViewBindHolder,
         position: Int,
         payloads: MutableList<Any>,
     ) {
@@ -103,12 +104,12 @@ abstract class BasePagingWithPinHeaderRvAdapter<HeaderVB : ViewBinding, ItemVB :
         }
     }
 
-    override fun onViewAttachedToWindow(holder: LifecycleOwnerBindHolder) {
+    override fun onViewAttachedToWindow(holder: LifecycleOwnerViewBindHolder) {
         super.onViewAttachedToWindow(holder)
         holder.attachToWindow()
     }
 
-    override fun onViewDetachedFromWindow(holder: LifecycleOwnerBindHolder) {
+    override fun onViewDetachedFromWindow(holder: LifecycleOwnerViewBindHolder) {
         super.onViewDetachedFromWindow(holder)
         holder.detachToWindow()
     }
@@ -123,9 +124,9 @@ abstract class BasePagingWithPinHeaderRvAdapter<HeaderVB : ViewBinding, ItemVB :
     abstract fun createItemHolder(binding: ItemVB, viewHolder: RecyclerView.ViewHolder)
 
 
-    inner class HeaderViewHolder(binding: ViewBinding) : LifecycleOwnerBindHolder(binding)
+    inner class HeaderViewHolder(binding: ViewBinding) : LifecycleOwnerViewBindHolder(binding)
 
 
-    inner class ItemViewHolder(binding: ViewBinding) : LifecycleOwnerBindHolder(binding)
+    inner class ItemViewHolder(binding: ViewBinding) : LifecycleOwnerViewBindHolder(binding)
 
 }

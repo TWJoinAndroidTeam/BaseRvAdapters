@@ -7,10 +7,12 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
+import com.example.baseadapterslibrary.adapter.normal.BaseRvAdapter
 import com.example.checkboxadapterlibrary.extension.changeCheck
 import com.example.baseadapterslibrary.module.ICheckBox
 import com.example.baseadapterslibrary.module.ChooserMode
 import com.example.baseadapterslibrary.module.ICheckBoxSetting
+import com.example.baseadapterslibrary.view_holder.BaseViewBindHolder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -20,11 +22,7 @@ private typealias SortListIndex = Int
 
 private typealias RealDataPosition = Int
 
-abstract class CheckBoxAdapter<VB : ViewBinding, CB : ICheckBox> : RecyclerView.Adapter<CheckBoxAdapter.CheckBoxBindHolder>(), ICheckBoxSetting<CB> {
-
-    lateinit var context: Context
-
-    val isContextInitialized get() = this::context.isInitialized
+abstract class CheckBoxAdapter<VB : ViewBinding, CB : ICheckBox> : BaseRvAdapter<VB, CB>(), ICheckBoxSetting<CB> {
 
     abstract val chooserMode: ChooserMode
 
@@ -34,26 +32,10 @@ abstract class CheckBoxAdapter<VB : ViewBinding, CB : ICheckBox> : RecyclerView.
 
     protected var selectCheckBoxMultiHaveSortMap = mutableMapOf<RealDataPosition, SortListIndex>()
 
-    protected var checkBoxList: MutableList<CB> = mutableListOf()
-
     private var onItemClickListener: ((CB, position: Int) -> Unit)? = null
 
-    abstract fun getViewBindingInflate(viewType: Int): Inflate<VB>
-
-    fun setOnItemClickListener( listener: (CB, position: Int) -> Unit) {
+    fun setOnItemClickListener(listener: (CB, position: Int) -> Unit) {
         onItemClickListener = listener
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CheckBoxBindHolder {
-        if (!isContextInitialized) context = parent.context
-
-        return getViewHolder(parent, viewType).apply {
-            createHolder(binding as VB, this)
-        }
-    }
-
-    protected open fun getViewHolder(parent: ViewGroup, viewType: Int): CheckBoxBindHolder {
-        return CheckBoxBindHolder(getViewBindingInflate(viewType).invoke(LayoutInflater.from(parent.context), parent, false))
     }
 
     open suspend fun setData(checkBoxList: MutableList<CB>) {
@@ -72,20 +54,15 @@ abstract class CheckBoxAdapter<VB : ViewBinding, CB : ICheckBox> : RecyclerView.
         }
     }
 
-    protected open suspend fun updateDataSet(newDataSet: MutableList<CB>) = withContext(Dispatchers.Main) {
-
-        val diff = getDiffWay(newDataSet)
-        checkBoxList.clear()
-        checkBoxList.addAll(newDataSet)
-
-        withContext(Dispatchers.Main) {
-            diff.dispatchUpdatesTo(this@CheckBoxAdapter)
-        }
-
+    override fun onBindViewHolder(holder: BaseViewBindHolder, position: Int) {
+        val adapterPosition = holder.bindingAdapterPosition
+        val item = dataList[adapterPosition]
+        bind(holder.binding as VB, item, adapterPosition, holder)
+        onCheckStateExchange(selectCheckBoxMap.containsKey(position), holder.binding, item, position)
     }
 
     override fun onBindViewHolder(
-        holder: CheckBoxBindHolder,
+        holder: BaseViewBindHolder,
         position: Int,
         payloads: MutableList<Any>,
     ) {
@@ -98,22 +75,19 @@ abstract class CheckBoxAdapter<VB : ViewBinding, CB : ICheckBox> : RecyclerView.
                     onCheckStateExchange(
                         payload,
                         holder.binding as VB,
-                        checkBoxList[adapterPosition],
+                        dataList[adapterPosition],
                         adapterPosition
                     )
-                }
+                } else partBind(
+                    payload,
+                    holder.binding as VB,
+                    dataList[adapterPosition],
+                    adapterPosition,
+                    holder
+                )
             }
         }
     }
-
-    override fun onBindViewHolder(holder: CheckBoxBindHolder, position: Int) {
-        val adapterPosition = holder.bindingAdapterPosition
-        val item = checkBoxList[adapterPosition]
-        bind(holder.binding as VB, item, adapterPosition, holder)
-        onCheckStateExchange(selectCheckBoxMap.containsKey(position), holder.binding, item, position)
-    }
-
-    override fun getItemCount() = checkBoxList.size
 
     /**
     點擊checkbox
@@ -153,7 +127,7 @@ abstract class CheckBoxAdapter<VB : ViewBinding, CB : ICheckBox> : RecyclerView.
     全選
      */
     override fun selectAll() {
-        checkBoxList.forEachIndexed { index, cb ->
+        dataList.forEachIndexed { index, cb ->
             cb.isCheck = true
             selectCheckBoxMap[index] = cb
         }
@@ -164,7 +138,7 @@ abstract class CheckBoxAdapter<VB : ViewBinding, CB : ICheckBox> : RecyclerView.
     清除
      */
     override fun clearAll() {
-        checkBoxList.forEachIndexed { index, cb ->
+        dataList.forEachIndexed { index, cb ->
             cb.isCheck = false
         }
         selectCheckBoxMap.clear()
@@ -175,7 +149,7 @@ abstract class CheckBoxAdapter<VB : ViewBinding, CB : ICheckBox> : RecyclerView.
     反選
      */
     override fun reverseSelect() {
-        checkBoxList.forEachIndexed { index, cb ->
+        dataList.forEachIndexed { index, cb ->
             cb.changeCheck()
             if (cb.isCheck) {
                 selectCheckBoxMap[index] = cb
@@ -207,22 +181,18 @@ abstract class CheckBoxAdapter<VB : ViewBinding, CB : ICheckBox> : RecyclerView.
         return selectCheckBoxMap.toMutableMap()
     }
 
-    abstract fun createHolder(binding: VB, viewHolder: RecyclerView.ViewHolder)
-    abstract fun bind(binding: VB, checkBox: CB, position: Int, viewHolder: CheckBoxBindHolder)
     abstract fun onCheckStateExchange(isCheck: Boolean, binding: VB, checkBox: CB, position: Int)
 
-    class CheckBoxBindHolder(val binding: ViewBinding) : RecyclerView.ViewHolder(binding.root)
-
     open fun removeItem(position: Int) {
-        checkBoxList.removeAt(position)
+        dataList.removeAt(position)
         selectCheckBoxMap.remove(position)
         notifyItemRemoved(position)
-        notifyItemRangeChanged(position, checkBoxList.size)
+        notifyItemRangeChanged(position, dataList.size)
     }
 
     private fun addSelectItem(position: Int) {
 
-        val selectCB = checkBoxList[position]
+        val selectCB = dataList[position]
 
         when (chooserMode) {
             is ChooserMode.MultipleResponse -> {
@@ -239,17 +209,17 @@ abstract class CheckBoxAdapter<VB : ViewBinding, CB : ICheckBox> : RecyclerView.
 
                 selectCheckBoxMap.forEach {
                     if (it.value.isCheck && position != it.key) {
-                        checkBoxList[it.key].changeCheck()
+                        dataList[it.key].changeCheck()
                         removeSelectItem(it.key)
-                        notifyItemChanged(it.key, checkBoxList[it.key].isCheck)
+                        notifyItemChanged(it.key, dataList[it.key].isCheck)
                     }
                 }
                 selectCheckBoxMap[position] = selectCB
-                checkBoxList[position].isCheck = true
+                dataList[position].isCheck = true
             }
         }
 
-        checkBoxList[position].isCheck = true
+        dataList[position].isCheck = true
     }
 
     private fun removeSelectItem(position: Int) {
@@ -272,40 +242,6 @@ abstract class CheckBoxAdapter<VB : ViewBinding, CB : ICheckBox> : RecyclerView.
                 selectCheckBoxMap.remove(position)
             }
         }
-        checkBoxList[position].isCheck = false
-    }
-
-
-    open fun getDiffWay(newDataSet: MutableList<CB>): DiffUtil.DiffResult {
-        return DiffUtil.calculateDiff(object : DiffUtil.Callback() {
-            override fun getOldListSize(): Int {
-                return checkBoxList.size
-            }
-
-            override fun getNewListSize(): Int {
-                return newDataSet.size
-            }
-
-            override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-                val oldData = newDataSet.getOrNull(oldItemPosition)
-                val newData = checkBoxList.getOrNull(newItemPosition)
-
-                return when {
-                    oldData == newData || newData == null -> false
-                    else -> oldData == newData
-                }
-            }
-
-            override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-
-                val oldData = newDataSet.getOrNull(oldItemPosition)
-                val newData = checkBoxList.getOrNull(newItemPosition)
-
-                return when {
-                    oldData == newData || newData == null -> false
-                    else -> oldData == newData
-                }
-            }
-        })
+        dataList[position].isCheck = false
     }
 }

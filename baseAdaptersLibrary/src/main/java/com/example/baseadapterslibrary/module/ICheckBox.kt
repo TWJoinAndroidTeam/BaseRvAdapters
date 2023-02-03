@@ -20,7 +20,7 @@ interface IPagingCheckBox : ICheckBox {
     var isInit: @RawValue Boolean
 }
 
-interface ExpandableICheckBox : ICheckBox {
+interface IExpandableCheckBox : ICheckBox {
     var isExpand: Boolean
 }
 
@@ -36,7 +36,7 @@ data class ExpandableCheckBoxModel<T>(
     val item: @RawValue T?,
     override var isCheck: Boolean,
     override var isExpand: Boolean,
-) : ICheckBox, Parcelable, ExpandableICheckBox
+) : Parcelable, IExpandableCheckBox
 
 @Parcelize
 data class PagingCheckBoxModel<T>(

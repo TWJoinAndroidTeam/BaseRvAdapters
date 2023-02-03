@@ -1,10 +1,10 @@
 package com.example.baseadapterslibrary.adapter.normal.checkbox
 
 import androidx.viewbinding.ViewBinding
-import com.example.baseadapterslibrary.module.ExpandableCheckBoxModel
-import com.example.baseadapterslibrary.module.ExpandableICheckBox
+import com.example.baseadapterslibrary.module.IExpandableCheckBox
+import com.example.baseadapterslibrary.view_holder.BaseViewBindHolder
 
-abstract class ExpandableCheckBoxAdapter<VB : ViewBinding, CB : ExpandableICheckBox>(private val needRememberDefaultUtilChange: Boolean) : CheckBoxAdapter<VB, CB>() {
+abstract class ExpandableCheckBoxAdapter<VB : ViewBinding, CB : IExpandableCheckBox>(private val needRememberDefaultUtilChange: Boolean) : CheckBoxAdapter<VB, CB>() {
 
     private var isExpand = false
 
@@ -15,15 +15,15 @@ abstract class ExpandableCheckBoxAdapter<VB : ViewBinding, CB : ExpandableICheck
     /**
      * 會根據isExpand的狀態來決定ＵＩ初始化
      */
-    override fun onBindViewHolder(holder: CheckBoxBindHolder, position: Int) {
+    override fun onBindViewHolder(holder: BaseViewBindHolder, position: Int) {
         val adapterPosition = holder.bindingAdapterPosition
-        val item = checkBoxList[adapterPosition]
+        val item = dataList[adapterPosition]
         bind(holder.binding as VB, item, adapterPosition, holder)
         onCheckStateExchange(selectCheckBoxMap.containsKey(position), holder.binding, item, position)
         onExpandChange(holder.binding, isExpand, item, position)
     }
 
-    override fun onBindViewHolder(holder: CheckBoxBindHolder, position: Int, payloads: MutableList<Any>) {
+    override fun onBindViewHolder(holder: BaseViewBindHolder, position: Int, payloads: MutableList<Any>) {
         val adapterPosition = holder.bindingAdapterPosition
         if (payloads.isEmpty()) {
             super.onBindViewHolder(holder, position, payloads)
@@ -33,11 +33,13 @@ abstract class ExpandableCheckBoxAdapter<VB : ViewBinding, CB : ExpandableICheck
                     onCheckStateExchange(
                         payload,
                         holder.binding as VB,
-                        checkBoxList[adapterPosition],
+                        dataList[adapterPosition],
                         adapterPosition
                     )
-                } else if (payload is ExpandableCheckBoxModel<*>) {
-                    onExpandChange(holder.binding as VB, payload.isExpand, checkBoxList[adapterPosition], adapterPosition)
+                } else if (payload is IExpandableCheckBox) {
+                    onExpandChange(holder.binding as VB, payload.isExpand, dataList[adapterPosition], adapterPosition)
+                } else {
+                    partBind(payload, holder.binding as VB, dataList[adapterPosition], adapterPosition, holder)
                 }
             }
         }
@@ -58,14 +60,14 @@ abstract class ExpandableCheckBoxAdapter<VB : ViewBinding, CB : ExpandableICheck
 
 
     private fun openExpandAllData() {
-        checkBoxList.forEachIndexed { index, cb ->
+        dataList.forEachIndexed { index, cb ->
             cb.isExpand = true
             notifyItemChanged(index, cb)
         }
     }
 
     private fun closeExpandAllData() {
-        checkBoxList.forEachIndexed { index, cb ->
+        dataList.forEachIndexed { index, cb ->
             cb.isExpand = false
             if (needRememberDefaultUtilChange) {
                 val defaultSelectItem = realSelectCheckBoxMap[index]
