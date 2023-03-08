@@ -1,5 +1,6 @@
 package com.example.baseadapterslibrary.adapter.normal
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.paging.LoadState
@@ -11,6 +12,10 @@ import com.example.baseadapterslibrary.view_holder.BaseViewBindHolder
 abstract class HeaderOrFooterAdapter<VB : ViewBinding> : RecyclerView.Adapter<BaseViewBindHolder>() {
 
     abstract fun getViewBindingInflate(viewType: Int): Inflate<VB>
+
+    val isContextInitialized get() = this::context.isInitialized
+
+    lateinit var context: Context
 
     /**
      * LoadState to present in the adapter.
@@ -36,6 +41,8 @@ abstract class HeaderOrFooterAdapter<VB : ViewBinding> : RecyclerView.Adapter<Ba
         }
 
     final override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewBindHolder {
+        if (!isContextInitialized) context = parent.context
+
         return getViewHolder(parent, viewType).apply {
             createHolder(binding as VB, loadState)
         }
