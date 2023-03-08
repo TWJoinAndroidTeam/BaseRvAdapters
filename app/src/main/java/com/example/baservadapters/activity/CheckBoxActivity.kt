@@ -106,10 +106,12 @@ class CheckBoxActivity : AppCompatActivity() {
 
         val testSingleList = mutableListOf<CheckBoxModel<Int>>()
         val testMutiList = mutableListOf<CheckBoxModel<Int>>()
+        val testMaxThreeList = mutableListOf<CheckBoxModel<Int>>()
 
 
         for (i in 0 until testSize) {
             testMutiList.add(CheckBoxModel(i, i < 3))
+            testMaxThreeList.add(CheckBoxModel(i, i < 3))
             testSingleList.add(CheckBoxModel(i, i == 1))
         }
 
@@ -117,7 +119,7 @@ class CheckBoxActivity : AppCompatActivity() {
             itemTypeAdapter?.updateDataSet(listOptions)
             testSingleCheckBoxAdapter?.setData(testSingleList)
             testMutiCheckBoxAdapter?.setData(testMutiList)
-            testMutiMaxThreeCheckBoxAdapter?.setData(testMutiList)
+            testMutiMaxThreeCheckBoxAdapter?.setData(testMaxThreeList)
         }
     }
 }
