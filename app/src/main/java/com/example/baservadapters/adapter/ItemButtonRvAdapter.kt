@@ -14,15 +14,15 @@ class ItemButtonRvAdapter : BaseRvAdapter<ItemButtonBinding, String>() {
         return ItemButtonBinding::inflate
     }
 
-    override fun createHolder(binding: ItemButtonBinding, viewHolder: RecyclerView.ViewHolder) {
+    override fun doWhenCreateHolder(binding: ItemButtonBinding, viewHolder: BaseViewBindHolder) {
         binding.btn.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context, android.R.color.holo_blue_dark))
     }
 
-    override fun bind(binding: ItemButtonBinding, item: String, bindingAdapterPosition: Int, viewHolder: BaseViewBindHolder) {
+    override fun doWhenBindHolder(binding: ItemButtonBinding, item: String, bindingAdapterPosition: Int, viewHolder: BaseViewBindHolder) {
         binding.btn.text = item
     }
 
-    override fun partBind(payload: Any, binding: ItemButtonBinding, item: String, bindingAdapterPosition: Int, viewHolder: BaseViewBindHolder) {
+    override fun doWhenBindPayload(payload: Any, binding: ItemButtonBinding, item: String, bindingAdapterPosition: Int, viewHolder: BaseViewBindHolder) {
 
     }
 }

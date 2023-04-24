@@ -18,7 +18,7 @@ abstract class ExpandableCheckBoxAdapter<VB : ViewBinding, CB : IExpandableCheck
     override fun onBindViewHolder(holder: BaseViewBindHolder, position: Int) {
         val adapterPosition = holder.bindingAdapterPosition
         val item = dataList[adapterPosition]
-        bind(holder.binding as VB, item, adapterPosition, holder)
+        doWhenBindHolder(holder.binding as VB, item, adapterPosition, holder)
         onCheckStateExchange(selectCheckBoxMap.containsKey(position), holder.binding, item, position)
         onExpandChange(holder.binding, isExpand, item, position)
     }
@@ -39,7 +39,7 @@ abstract class ExpandableCheckBoxAdapter<VB : ViewBinding, CB : IExpandableCheck
                 } else if (payload is IExpandableCheckBox) {
                     onExpandChange(holder.binding as VB, payload.isExpand, dataList[adapterPosition], adapterPosition)
                 } else {
-                    partBind(payload, holder.binding as VB, dataList[adapterPosition], adapterPosition, holder)
+                    doWhenBindPayload(payload, holder.binding as VB, dataList[adapterPosition], adapterPosition, holder)
                 }
             }
         }

@@ -1,9 +1,9 @@
 package com.example.baservadapters.adapter
 
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.RecyclerView
 import com.example.baseadapterslibrary.adapter.normal.checkbox.Inflate
 import com.example.baseadapterslibrary.adapter.paging.BasePagingRvAdapter
+import com.example.baseadapterslibrary.view_holder.LifecycleOwnerViewBindHolder
 import com.example.baservadapters.databinding.ItemCheckboxBinding
 
 class DemoPagingRvAdapter : BasePagingRvAdapter<ItemCheckboxBinding, String>(diffCallback) {
@@ -25,15 +25,16 @@ class DemoPagingRvAdapter : BasePagingRvAdapter<ItemCheckboxBinding, String>(dif
         return ItemCheckboxBinding::inflate
     }
 
-    override fun createHolder(binding: ItemCheckboxBinding, viewHolder: RecyclerView.ViewHolder) {
+    override fun doWhenCreateViewHolder(binding: ItemCheckboxBinding, viewHolder: LifecycleOwnerViewBindHolder) {
 
     }
 
-    override fun bind(binding: ItemCheckboxBinding, item: String, position: Int) {
+
+    override fun doWhenBindHolder(binding: ItemCheckboxBinding, item: String, position: Int) {
         onItemClickListener?.invoke(item, position)
     }
 
-    override fun partBind(payload: Any, binding: ItemCheckboxBinding, item: String, position: Int) {
+    override fun doWhenBindPayload(payload: Any, binding: ItemCheckboxBinding, item: String, position: Int) {
 
     }
 }

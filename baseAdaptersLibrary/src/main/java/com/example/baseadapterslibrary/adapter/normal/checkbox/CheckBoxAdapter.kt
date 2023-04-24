@@ -1,11 +1,8 @@
 package com.example.baseadapterslibrary.adapter.normal.checkbox
 
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.example.baseadapterslibrary.adapter.normal.BaseRvAdapter
 import com.example.checkboxadapterlibrary.extension.changeCheck
@@ -13,8 +10,6 @@ import com.example.baseadapterslibrary.module.ICheckBox
 import com.example.baseadapterslibrary.module.ChooserMode
 import com.example.baseadapterslibrary.module.ICheckBoxSetting
 import com.example.baseadapterslibrary.view_holder.BaseViewBindHolder
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 typealias Inflate<T> = (LayoutInflater, ViewGroup?, Boolean) -> T
 
@@ -57,7 +52,7 @@ abstract class CheckBoxAdapter<VB : ViewBinding, CB : ICheckBox> : BaseRvAdapter
     override fun onBindViewHolder(holder: BaseViewBindHolder, position: Int) {
         val adapterPosition = holder.bindingAdapterPosition
         val item = dataList[adapterPosition]
-        bind(holder.binding as VB, item, adapterPosition, holder)
+        doWhenBindHolder(holder.binding as VB, item, adapterPosition, holder)
         onCheckStateExchange(selectCheckBoxMap.containsKey(position), holder.binding, item, position)
     }
 
@@ -78,7 +73,7 @@ abstract class CheckBoxAdapter<VB : ViewBinding, CB : ICheckBox> : BaseRvAdapter
                         dataList[adapterPosition],
                         adapterPosition
                     )
-                } else partBind(
+                } else doWhenBindPayload(
                     payload,
                     holder.binding as VB,
                     dataList[adapterPosition],

@@ -15,11 +15,11 @@ class TestMutiCheckBoxAdapter(override val chooserMode: ChooserMode) : CheckBoxA
         return ItemCheckboxBinding::inflate
     }
 
-    override fun createHolder(binding: ItemCheckboxBinding, viewHolder: RecyclerView.ViewHolder) {
+    override fun doWhenCreateHolder(binding: ItemCheckboxBinding, viewHolder: BaseViewBindHolder) {
 
     }
 
-    override fun bind(binding: ItemCheckboxBinding, checkBox: CheckBoxModel<Int>, position: Int, viewHolder: BaseViewBindHolder) {
+    override fun doWhenBindHolder(binding: ItemCheckboxBinding, checkBox: CheckBoxModel<Int>, position: Int, viewHolder: BaseViewBindHolder) {
         binding.txtNumber.text = checkBox.item.toString()
         binding.root.setOnClickListener {
             onCheckBoxClick(checkBox, position)
@@ -36,7 +36,7 @@ class TestMutiCheckBoxAdapter(override val chooserMode: ChooserMode) : CheckBoxA
         }
     }
 
-    override fun partBind(payload: Any, binding: ItemCheckboxBinding, item: CheckBoxModel<Int>, bindingAdapterPosition: Int, viewHolder: BaseViewBindHolder) {
+    override fun doWhenBindPayload(payload: Any, binding: ItemCheckboxBinding, item: CheckBoxModel<Int>, bindingAdapterPosition: Int, viewHolder: BaseViewBindHolder) {
 
     }
 }
