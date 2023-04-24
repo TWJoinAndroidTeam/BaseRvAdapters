@@ -50,7 +50,7 @@ abstract class BaseRvAdapter<VB : ViewBinding, DATA> : RecyclerView.Adapter<Base
         if (!isContextInitialized) context = parent.context
 
         return getViewHolder(parent, viewType).apply {
-            createHolder(binding as VB, this)
+            doWhenCreateHolder(binding as VB, this)
         }
     }
 
@@ -74,7 +74,7 @@ abstract class BaseRvAdapter<VB : ViewBinding, DATA> : RecyclerView.Adapter<Base
             super.onBindViewHolder(holder, position, payloads)
         } else {
             for (payload in payloads) {
-                partBind(
+                doWhenBindPayload(
                     payload,
                     holder.binding as VB,
                     dataList[adapterPosition],
@@ -87,7 +87,7 @@ abstract class BaseRvAdapter<VB : ViewBinding, DATA> : RecyclerView.Adapter<Base
 
     override fun onBindViewHolder(holder: BaseViewBindHolder, position: Int) {
         val adapterPosition = holder.bindingAdapterPosition
-        bind(holder.binding as VB, dataList[adapterPosition], dataList.indexOf(dataList[adapterPosition]), holder)
+        doWhenBindHolder(holder.binding as VB, dataList[adapterPosition], dataList.indexOf(dataList[adapterPosition]), holder)
     }
 
     override fun getItemCount() = dataList.size
@@ -105,10 +105,9 @@ abstract class BaseRvAdapter<VB : ViewBinding, DATA> : RecyclerView.Adapter<Base
     }
 
 
-    abstract fun createHolder(binding: VB, viewHolder: RecyclerView.ViewHolder)
-    abstract fun bind(binding: VB, item: DATA, bindingAdapterPosition: Int, viewHolder: BaseViewBindHolder)
-    abstract fun partBind(payload: Any, binding: VB, item: DATA, bindingAdapterPosition: Int, viewHolder: BaseViewBindHolder)
-
+    abstract fun doWhenCreateHolder(binding: VB, viewHolder: BaseViewBindHolder)
+    abstract fun doWhenBindHolder(binding: VB, item: DATA, bindingAdapterPosition: Int, viewHolder: BaseViewBindHolder)
+    abstract fun doWhenBindPayload(payload: Any, binding: VB, item: DATA, bindingAdapterPosition: Int, viewHolder: BaseViewBindHolder)
 
     open fun getDiffWay(newDataSet: MutableList<DATA>): DiffUtil.DiffResult {
         return DiffUtil.calculateDiff(object : DiffUtil.Callback() {

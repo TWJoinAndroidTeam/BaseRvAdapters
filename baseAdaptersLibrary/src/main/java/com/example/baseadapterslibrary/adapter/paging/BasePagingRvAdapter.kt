@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.example.baseadapterslibrary.adapter.normal.checkbox.Inflate
 import com.example.baseadapterslibrary.view_holder.LifecycleOwnerViewBindHolder
@@ -31,7 +30,7 @@ abstract class BasePagingRvAdapter<VB : ViewBinding, DATA : Any>(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LifecycleOwnerViewBindHolder {
         if (!isContextInitialized) context = parent.context
         return getViewHolder(parent, viewType).apply {
-            createHolder(binding as VB, this)
+            doWhenCreateViewHolder(binding as VB, this)
         }
     }
 
@@ -56,7 +55,7 @@ abstract class BasePagingRvAdapter<VB : ViewBinding, DATA : Any>(
         } else {
             for (payload in payloads) {
                 if (data != null) {
-                    partBind(
+                    doWhenBindPayload(
                         payload,
                         holder.binding as VB,
                         data,
@@ -70,7 +69,7 @@ abstract class BasePagingRvAdapter<VB : ViewBinding, DATA : Any>(
     override fun onBindViewHolder(holder: LifecycleOwnerViewBindHolder, position: Int) {
         val data = getItem(position)
         if (data != null) {
-            bind(holder.binding as VB, data, position)
+            doWhenBindHolder(holder.binding as VB, data, position)
         }
     }
 
@@ -84,9 +83,11 @@ abstract class BasePagingRvAdapter<VB : ViewBinding, DATA : Any>(
         holder.detachToWindow()
     }
 
-    abstract fun createHolder(binding: VB, viewHolder: RecyclerView.ViewHolder)
-    abstract fun bind(binding: VB, item: DATA, position: Int)
-    abstract fun partBind(payload: Any, binding: VB, item: DATA, position: Int)
+    abstract fun doWhenCreateViewHolder(binding: VB, viewHolder: LifecycleOwnerViewBindHolder)
+
+    abstract fun doWhenBindHolder(binding: VB, item: DATA, position: Int)
+
+    abstract fun doWhenBindPayload(payload: Any, binding: VB, item: DATA, position: Int)
 
 
 }

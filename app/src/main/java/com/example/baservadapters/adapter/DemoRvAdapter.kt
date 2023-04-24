@@ -20,11 +20,11 @@ class DemoRvAdapter : BaseRvAdapter<ItemButtonBinding, String>() {
         }
     }
 
-    override fun bind(binding: ItemButtonBinding, item: String, bindingAdapterPosition: Int, viewHolder: BaseViewBindHolder) {
+    override fun doWhenBindHolder(binding: ItemButtonBinding, item: String, bindingAdapterPosition: Int, viewHolder: BaseViewBindHolder) {
         binding.btn.text = item
     }
 
-    override fun partBind(payload: Any, binding: ItemButtonBinding, item: String, bindingAdapterPosition: Int, viewHolder: BaseViewBindHolder) {
+    override fun doWhenBindPayload(payload: Any, binding: ItemButtonBinding, item: String, bindingAdapterPosition: Int, viewHolder: BaseViewBindHolder) {
 
     }
 
