@@ -14,7 +14,7 @@ class ItemButtonRvAdapter : BaseRvAdapter<ItemButtonBinding, String>() {
         return ItemButtonBinding::inflate
     }
 
-    override fun createHolder(binding: ItemButtonBinding, viewHolder: RecyclerView.ViewHolder) {
+    override fun doWhenCreateHolder(binding: ItemButtonBinding, viewHolder: BaseViewBindHolder) {
         binding.btn.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context, android.R.color.holo_blue_dark))
     }
 

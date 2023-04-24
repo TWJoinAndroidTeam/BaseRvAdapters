@@ -14,7 +14,7 @@ class DemoRvAdapter : BaseRvAdapter<ItemButtonBinding, String>() {
         return ItemButtonBinding::inflate
     }
 
-    override fun createHolder(binding: ItemButtonBinding, viewHolder: RecyclerView.ViewHolder) {
+    override fun doWhenCreateHolder(binding: ItemButtonBinding, viewHolder: BaseViewBindHolder) {
         binding.btn.setOnClickListener {
             clickListener!!.invoke(viewHolder.bindingAdapterPosition)
         }
