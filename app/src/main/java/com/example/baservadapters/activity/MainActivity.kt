@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity() {
 
     private val optionList = mutableListOf(TYPE_HEADER_OR_FOOTER, TYPE_CHECKBOX)
 
-    private lateinit var spinnerAdapter: DemoSpinnerAdapter<Int>
+    private lateinit var spinnerAdapter: DemoSpinnerAdapter
 
     private lateinit var spinnerWindow: PopupWindow
 

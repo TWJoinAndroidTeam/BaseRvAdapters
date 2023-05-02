@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.viewbinding.ViewBinding
 import com.example.baseadapterslibrary.adapter.normal.BaseRvAdapter
-import com.example.checkboxadapterlibrary.extension.changeCheck
+import com.example.baseadapterslibrary.extension.changeCheck
 import com.example.baseadapterslibrary.model.ICheckBox
 import com.example.baseadapterslibrary.model.ChooserMode
 import com.example.baseadapterslibrary.model.ICheckBoxSetting

@@ -6,5 +6,5 @@ data class TestSpinner(
     override val canSelect: Boolean,
     override val realData: Int?
 ) : ISpinnerUI<Int> {
-    override val spinnerItemName = realData.toString()
+    val spinnerItemName = realData.toString()
 }
