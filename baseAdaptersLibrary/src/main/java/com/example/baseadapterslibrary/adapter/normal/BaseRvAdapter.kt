@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
-import com.example.baseadapterslibrary.module.NormalRvLoadState
+import com.example.baseadapterslibrary.model.NormalRvLoadState
 import com.example.baseadapterslibrary.view_holder.BaseViewBindHolder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

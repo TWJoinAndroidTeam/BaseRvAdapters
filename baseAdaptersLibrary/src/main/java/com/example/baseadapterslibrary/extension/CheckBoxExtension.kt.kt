@@ -1,8 +1,8 @@
 package com.example.checkboxadapterlibrary.extension
 
-import com.example.baseadapterslibrary.module.CheckBoxModel
-import com.example.baseadapterslibrary.module.ExpandableCheckBoxModel
-import com.example.baseadapterslibrary.module.ICheckBox
+import com.example.baseadapterslibrary.model.CheckBoxModel
+import com.example.baseadapterslibrary.model.ExpandableCheckBoxModel
+import com.example.baseadapterslibrary.model.ICheckBox
 
 
 fun ICheckBox.changeCheck() {

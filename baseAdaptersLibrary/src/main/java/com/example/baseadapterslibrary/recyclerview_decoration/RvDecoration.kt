@@ -37,6 +37,19 @@ class RvDecoration() : RecyclerView.ItemDecoration() {
 
     var radius: Float = 0f
 
+    /**
+     *  @param margin 整個rv的最外側間距
+     */
+    constructor(margin: Int, radius: Float = 0f) : this() {
+        initSpace(horizontalSpace, verticalSpace, margin, margin, margin, margin, radius)
+    }
+
+    /**
+     *  @param margin 整個rv的最外側間距
+     */
+    constructor(leftMargin: Int = 0, rightMargin: Int = 0, topMargin: Int = 0, bottomMargin: Int = 0, radius: Float = 0f) : this() {
+        initSpace(horizontalSpace, verticalSpace, leftMargin, topMargin, rightMargin, bottomMargin, radius)
+    }
 
     /**
      *  @param horizontalSpace 每个item左右两侧的间距
@@ -250,7 +263,7 @@ class RvDecoration() : RecyclerView.ItemDecoration() {
         otherRect.top = otherRect.bottom
         otherRect.bottom = maxBottom
         val path = Path()
-        Log.e("????!",radius.toString())
+        Log.e("????!", radius.toString())
         path.addRoundRect(roundRect, radius, radius, Path.Direction.CW)
         path.addRect(otherRect, Path.Direction.CW)
         c.clipPath(path)

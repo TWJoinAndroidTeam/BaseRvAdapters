@@ -1,4 +1,4 @@
-package com.example.baseadapterslibrary.module
+package com.example.baseadapterslibrary.model
 
 import androidx.recyclerview.widget.RecyclerView
 

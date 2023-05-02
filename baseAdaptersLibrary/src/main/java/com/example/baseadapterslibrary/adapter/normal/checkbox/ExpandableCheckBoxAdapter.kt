@@ -1,7 +1,7 @@
 package com.example.baseadapterslibrary.adapter.normal.checkbox
 
 import androidx.viewbinding.ViewBinding
-import com.example.baseadapterslibrary.module.IExpandableCheckBox
+import com.example.baseadapterslibrary.model.IExpandableCheckBox
 import com.example.baseadapterslibrary.view_holder.BaseViewBindHolder
 
 abstract class ExpandableCheckBoxAdapter<VB : ViewBinding, CB : IExpandableCheckBox>(private val needRememberDefaultUtilChange: Boolean) : CheckBoxAdapter<VB, CB>() {

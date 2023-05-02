@@ -5,9 +5,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.baseadapterslibrary.module.CheckBoxModel
-import com.example.baseadapterslibrary.module.ChooserMode
-import com.example.baseadapterslibrary.module.SelectLimitOption
+import com.example.baseadapterslibrary.model.CheckBoxModel
+import com.example.baseadapterslibrary.model.ChooserMode
+import com.example.baseadapterslibrary.model.SelectLimitOption
 import com.example.baseadapterslibrary.recyclerview_decoration.RvDecoration
 import com.example.baservadapters.adapter.DemoRvAdapter
 import com.example.baservadapters.adapter.TestMutiCheckBoxAdapter

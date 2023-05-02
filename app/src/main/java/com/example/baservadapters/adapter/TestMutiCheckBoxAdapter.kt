@@ -1,11 +1,10 @@
 package com.example.baservadapters.adapter
 
 import androidx.core.content.ContextCompat
-import androidx.recyclerview.widget.RecyclerView
 import com.example.baseadapterslibrary.adapter.normal.checkbox.CheckBoxAdapter
 import com.example.baseadapterslibrary.adapter.normal.checkbox.Inflate
-import com.example.baseadapterslibrary.module.CheckBoxModel
-import com.example.baseadapterslibrary.module.ChooserMode
+import com.example.baseadapterslibrary.model.CheckBoxModel
+import com.example.baseadapterslibrary.model.ChooserMode
 import com.example.baseadapterslibrary.view_holder.BaseViewBindHolder
 import com.example.baservadapters.databinding.ItemCheckboxBinding
 

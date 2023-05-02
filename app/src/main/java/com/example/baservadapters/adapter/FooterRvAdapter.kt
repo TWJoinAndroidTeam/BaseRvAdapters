@@ -3,7 +3,7 @@ package com.example.baservadapters.adapter
 import android.view.View
 import com.example.baseadapterslibrary.adapter.normal.HeaderOrFooterAdapter
 import com.example.baseadapterslibrary.adapter.normal.Inflate
-import com.example.baseadapterslibrary.module.NormalRvLoadState
+import com.example.baseadapterslibrary.model.NormalRvLoadState
 import com.example.baservadapters.databinding.ItemTextBinding
 
 class FooterRvAdapter : HeaderOrFooterAdapter<ItemTextBinding>() {
