@@ -2,7 +2,7 @@ package com.example.baseadapterslibrary.adapter
 
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import com.example.baseadapterslibrary.module.IItemTouchHelper
+import com.example.baseadapterslibrary.model.IItemTouchHelper
 
 abstract class NormalItemTouchHelperCallback(var mAdapter: IItemTouchHelper?) : ItemTouchHelper.Callback() {
 

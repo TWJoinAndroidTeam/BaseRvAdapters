@@ -1,9 +1,8 @@
 package com.example.baseadapterslibrary.adapter.normal
 
 import androidx.viewbinding.ViewBinding
-import com.example.baseadapterslibrary.adapter.normal.checkbox.Inflate
-import com.example.baseadapterslibrary.module.IItemTouchHelper
-import com.example.baseadapterslibrary.module.OnStartDragListener
+import com.example.baseadapterslibrary.model.IItemTouchHelper
+import com.example.baseadapterslibrary.model.OnStartDragListener
 import java.util.*
 
 abstract class BaseDraggableRvAdapter<VB : ViewBinding, DATA>(internal open val onStartDragListener: OnStartDragListener) : BaseRvAdapter<VB, DATA>(),

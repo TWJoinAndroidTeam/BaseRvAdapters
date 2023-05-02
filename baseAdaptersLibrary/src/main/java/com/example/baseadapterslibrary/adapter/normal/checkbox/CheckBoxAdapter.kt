@@ -6,9 +6,9 @@ import android.view.ViewGroup
 import androidx.viewbinding.ViewBinding
 import com.example.baseadapterslibrary.adapter.normal.BaseRvAdapter
 import com.example.checkboxadapterlibrary.extension.changeCheck
-import com.example.baseadapterslibrary.module.ICheckBox
-import com.example.baseadapterslibrary.module.ChooserMode
-import com.example.baseadapterslibrary.module.ICheckBoxSetting
+import com.example.baseadapterslibrary.model.ICheckBox
+import com.example.baseadapterslibrary.model.ChooserMode
+import com.example.baseadapterslibrary.model.ICheckBoxSetting
 import com.example.baseadapterslibrary.view_holder.BaseViewBindHolder
 
 typealias Inflate<T> = (LayoutInflater, ViewGroup?, Boolean) -> T

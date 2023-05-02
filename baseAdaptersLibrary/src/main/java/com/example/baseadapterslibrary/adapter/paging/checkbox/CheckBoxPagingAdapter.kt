@@ -6,9 +6,9 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.viewbinding.ViewBinding
 import com.example.baseadapterslibrary.adapter.paging.BasePagingRvAdapter
-import com.example.baseadapterslibrary.module.ChooserMode
-import com.example.baseadapterslibrary.module.ICheckBoxSetting
-import com.example.baseadapterslibrary.module.IPagingCheckBox
+import com.example.baseadapterslibrary.model.ChooserMode
+import com.example.baseadapterslibrary.model.ICheckBoxSetting
+import com.example.baseadapterslibrary.model.IPagingCheckBox
 import com.example.baseadapterslibrary.view_holder.LifecycleOwnerViewBindHolder
 
 abstract class CheckBoxPagingAdapter<VB : ViewBinding, CB : IPagingCheckBox>(

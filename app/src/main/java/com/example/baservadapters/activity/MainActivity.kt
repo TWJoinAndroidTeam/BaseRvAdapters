@@ -3,16 +3,26 @@ package com.example.baservadapters.activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.widget.PopupWindow
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.baseadapterslibrary.adapter.normal.spinner.SpinnerBuilder
 import com.example.baservadapters.databinding.ActivityMainBinding
 import com.example.baservadapters.util.DimensionUtil
 import com.example.baseadapterslibrary.recyclerview_decoration.RvDecoration
+import com.example.baservadapters.R
 import com.example.baservadapters.adapter.DemoRvAdapter
+import com.example.baservadapters.adapter.DemoSpinnerAdapter
+import com.example.baservadapters.model.TestSpinner
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
+
+    companion object {
+        const val TYPE_HEADER_OR_FOOTER = "header or Footer"
+        const val TYPE_CHECKBOX = "checkbox"
+    }
 
     private lateinit var viewBinding: ActivityMainBinding
 
@@ -20,12 +30,9 @@ class MainActivity : AppCompatActivity() {
 
     private val optionList = mutableListOf(TYPE_HEADER_OR_FOOTER, TYPE_CHECKBOX)
 
-    companion object {
+    private lateinit var spinnerAdapter: DemoSpinnerAdapter<Int>
 
-        const val TYPE_HEADER_OR_FOOTER = "header or Footer"
-        const val TYPE_CHECKBOX = "checkbox"
-    }
-
+    private lateinit var spinnerWindow: PopupWindow
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,15 +43,27 @@ class MainActivity : AppCompatActivity() {
 
         initRv()
 
+        initSpinner()
+
+        viewBinding.btnTest.setOnClickListener {
+            spinnerWindow.width = it.width
+            spinnerWindow.showAsDropDown(it)
+        }
+
         setData()
+    }
+
+    private fun initSpinner() {
+        spinnerAdapter = DemoSpinnerAdapter()
+        spinnerWindow = SpinnerBuilder(this, spinnerAdapter)
+            .setBackgroundRes(R.drawable.bg_white_stroke_1_purple_732ef5_radius_5)
+            .changePadding(DimensionUtil.dp2px(3))
+            .build()
     }
 
     private fun initRv() {
 
-        Log.e("???", "initRv")
-
         viewBinding.rv.apply {
-//            layoutManager = LinearLayoutManager(context)
             layoutManager = LinearLayoutManager(this@MainActivity)
             addItemDecoration(
                 RvDecoration(
@@ -76,8 +95,15 @@ class MainActivity : AppCompatActivity() {
 
     private fun setData() {
 
+        val testSpinnerModelList = listOf(
+            TestSpinner(true, 1),
+            TestSpinner(true, 2),
+            TestSpinner(true, 3)
+        )
+
         lifecycleScope.launch {
             itemTypeAdapter?.updateDataSet(optionList)
+            spinnerAdapter.updateDataSet(testSpinnerModelList.toMutableList())
         }
     }
 

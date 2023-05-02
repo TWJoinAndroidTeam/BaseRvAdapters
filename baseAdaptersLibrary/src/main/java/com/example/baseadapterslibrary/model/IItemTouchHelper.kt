@@ -1,4 +1,4 @@
-package com.example.baseadapterslibrary.module
+package com.example.baseadapterslibrary.model
 
 interface IItemTouchHelper {
     fun onItemMove(fromPosition: Int, toPosition: Int)   //處理用上下拖曳來產生換位效果

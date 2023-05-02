@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.example.baseadapterslibrary.adapter.normal.checkbox.Inflate
-import com.example.baseadapterslibrary.module.IHeaderAdapterSetting
+import com.example.baseadapterslibrary.model.IHeaderAdapterSetting
 import com.example.baseadapterslibrary.view_holder.LifecycleOwnerViewBindHolder
 
 abstract class BasePagingWithPinHeaderRvAdapter<HeaderVB : ViewBinding, ItemVB : ViewBinding, DATA : Any>(
