@@ -1,4 +1,4 @@
-package com.example.checkboxadapterlibrary.extension
+package com.example.baseadapterslibrary.extension
 
 import com.example.baseadapterslibrary.model.CheckBoxModel
 import com.example.baseadapterslibrary.model.ExpandableCheckBoxModel
