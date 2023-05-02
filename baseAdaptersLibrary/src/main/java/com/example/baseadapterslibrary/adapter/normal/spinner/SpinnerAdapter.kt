@@ -8,9 +8,10 @@ import com.example.baseadapterslibrary.view_holder.BaseViewBindHolder
 abstract class SpinnerAdapter<VB : ViewBinding, SP : ISpinnerUI<*>> : BaseRvAdapter<VB, SP>() {
 
     private var spinnerSelectListenerList: MutableList<((SP, position: Int) -> Unit)?> = mutableListOf()
-
-    fun addOnSpinnerItemSelectListener(listener: (item: SP, position: Int) -> Unit) {
+    fun addOnSpinnerItemSelectListener(listener: (item: SP, position: Int) -> Unit): (SP, Int) -> Unit {
         spinnerSelectListenerList.add(listener)
+
+        return listener
     }
 
     fun removeOnSpinnerItemSelectListener(listener: (item: SP, position: Int) -> Unit) {

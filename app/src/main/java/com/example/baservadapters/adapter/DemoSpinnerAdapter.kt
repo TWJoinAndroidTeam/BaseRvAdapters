@@ -17,7 +17,7 @@ class DemoSpinnerAdapter<T> : SpinnerAdapter<ItemDemoStyleSpinnerBinding, ISpinn
     }
 
     override fun doWhenBindHolder(binding: ItemDemoStyleSpinnerBinding, item: ISpinnerUI<T>, bindingAdapterPosition: Int, viewHolder: BaseViewBindHolder) {
-        binding.txtTitle.text = item.spinnerItemName?.asString(context)
+        binding.txtTitle.text = item.spinnerItemName
         binding.root.setOnClickListener {
             onSpinnerItemClick(item, bindingAdapterPosition)
         }

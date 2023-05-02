@@ -2,7 +2,6 @@ package com.example.baservadapters.activity
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.PopupWindow
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -50,6 +49,10 @@ class MainActivity : AppCompatActivity() {
             spinnerWindow.showAsDropDown(it)
         }
 
+        spinnerAdapter.addOnSpinnerItemSelectListener { item, position ->
+            viewBinding.txtSelectSpinner.text = item.spinnerItemName
+        }
+
         setData()
     }
 
@@ -57,8 +60,7 @@ class MainActivity : AppCompatActivity() {
         spinnerAdapter = DemoSpinnerAdapter()
         spinnerWindow = SpinnerBuilder(this, spinnerAdapter)
             .setBackgroundRes(R.drawable.bg_white_stroke_1_purple_732ef5_radius_5)
-            .changePadding(DimensionUtil.dp2px(3))
-            .build()
+            .build().first
     }
 
     private fun initRv() {
