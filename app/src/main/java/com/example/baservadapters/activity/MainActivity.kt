@@ -11,6 +11,7 @@ import com.example.baservadapters.databinding.ActivityMainBinding
 import com.example.baservadapters.util.DimensionUtil
 import com.example.baseadapterslibrary.recyclerview_decoration.RvDecoration
 import com.example.baservadapters.R
+import com.example.baservadapters.activity.expandablecheckbox.ExpandableCheckBoxActivity
 import com.example.baservadapters.adapter.DemoRvAdapter
 import com.example.baservadapters.adapter.DemoSpinnerAdapter
 import com.example.baservadapters.model.TestSpinner
@@ -21,13 +22,14 @@ class MainActivity : AppCompatActivity() {
     companion object {
         const val TYPE_HEADER_OR_FOOTER = "header or Footer"
         const val TYPE_CHECKBOX = "checkbox"
+        const val TYPE_EXPAND_CHECKBOX = "expand checkbox"
     }
 
     private lateinit var viewBinding: ActivityMainBinding
 
     private var itemTypeAdapter: DemoRvAdapter? = null
 
-    private val optionList = mutableListOf(TYPE_HEADER_OR_FOOTER, TYPE_CHECKBOX)
+    private val optionList = mutableListOf(TYPE_HEADER_OR_FOOTER, TYPE_CHECKBOX, TYPE_EXPAND_CHECKBOX)
 
     private lateinit var spinnerAdapter: DemoSpinnerAdapter
 
@@ -88,6 +90,11 @@ class MainActivity : AppCompatActivity() {
 
                 TYPE_CHECKBOX -> {
                     val intent = Intent(this, CheckBoxActivity::class.java)
+                    startActivity(intent)
+                }
+
+                TYPE_EXPAND_CHECKBOX -> {
+                    val intent = Intent(this, ExpandableCheckBoxActivity::class.java)
                     startActivity(intent)
                 }
             }

@@ -21,7 +21,7 @@ class TestMutiCheckBoxAdapter(override val chooserMode: ChooserMode) : CheckBoxA
     override fun doWhenBindHolder(binding: ItemCheckboxBinding, checkBox: CheckBoxModel<Int>, position: Int, viewHolder: BaseViewBindHolder) {
         binding.txtNumber.text = checkBox.item.toString()
         binding.root.setOnClickListener {
-            onCheckBoxClick(checkBox, position)
+            clickCheckBox(checkBox, position)
         }
     }
 

@@ -87,7 +87,7 @@ abstract class CheckBoxAdapter<VB : ViewBinding, CB : ICheckBox> : BaseRvAdapter
     /**
     點擊checkbox
      */
-    fun onCheckBoxClick(cb: CB, position: Int) {
+    fun clickCheckBox(cb: CB, position: Int) {
 
         if (chooserMode is ChooserMode.SingleChoice) {
             if (!(chooserMode as ChooserMode.SingleChoice).canRemoveSelect && cb.isCheck) return

@@ -72,7 +72,7 @@ abstract class ExpandableCheckBoxAdapter<VB : ViewBinding, CB : IExpandableCheck
             if (needRememberDefaultUtilChange) {
                 val defaultSelectItem = realSelectCheckBoxMap[index]
                 if (defaultSelectItem != null) {
-                    onCheckBoxClick(defaultSelectItem, index)
+                    clickCheckBox(defaultSelectItem, index)
                 }
             }
             notifyItemChanged(index, cb)
@@ -82,6 +82,37 @@ abstract class ExpandableCheckBoxAdapter<VB : ViewBinding, CB : IExpandableCheck
 
     abstract fun onExpandChange(viewBinding: VB, isExpand: Boolean, cb: CB, adapterPosition: Int)
 
+    /**
+     * 組件默認點擊狀態
+     */
+    fun clickExpandItem(binding: VB, adapterPosition: Int) {
+
+        val newState = !dataList[adapterPosition].isExpand
+
+        dataList[adapterPosition].isExpand = newState
+
+        onExpandChange(
+            binding,
+            newState,
+            dataList[adapterPosition],
+            adapterPosition
+        )
+    }
+
+    /**
+     * 指定任意位置組件更改為任意狀態
+     */
+    fun changeExpandItem(binding: VB, isExpand: Boolean, adapterPosition: Int) {
+
+        dataList[adapterPosition].isExpand = isExpand
+
+        onExpandChange(
+            binding,
+            isExpand,
+            dataList[adapterPosition],
+            adapterPosition
+        )
+    }
 
     override suspend fun setData(checkBoxList: MutableList<CB>) {
 
