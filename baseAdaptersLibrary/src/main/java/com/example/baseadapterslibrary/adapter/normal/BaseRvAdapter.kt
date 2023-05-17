@@ -7,6 +7,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
+import com.example.baseadapterslibrary.extension.addOrReplaceList
+import com.example.baseadapterslibrary.model.IListDataModifySetting
 import com.example.baseadapterslibrary.model.NormalRvLoadState
 import com.example.baseadapterslibrary.view_holder.BaseViewBindHolder
 import kotlinx.coroutines.Dispatchers
@@ -14,7 +16,7 @@ import kotlinx.coroutines.withContext
 
 typealias Inflate<T> = (LayoutInflater, ViewGroup?, Boolean) -> T
 
-abstract class BaseRvAdapter<VB : ViewBinding, DATA> : RecyclerView.Adapter<BaseViewBindHolder>() {
+abstract class BaseRvAdapter<VB : ViewBinding, DATA> : RecyclerView.Adapter<BaseViewBindHolder>(), IListDataModifySetting<DATA> {
 
     lateinit var context: Context
 
@@ -92,18 +94,32 @@ abstract class BaseRvAdapter<VB : ViewBinding, DATA> : RecyclerView.Adapter<Base
 
     override fun getItemCount() = dataList.size
 
-    fun removeItem(item: DATA, position: Int) {
+    override fun removeItem(item: DATA, position: Int) {
         dataList.removeAt(position)
         notifyItemRemoved(position)
         notifyItemRangeChanged(position, dataList.size)
     }
 
-    fun addData(data: DATA) {
+    override fun addItem(data: DATA) {
         this.dataList.add(data)
         notifyItemInserted(dataList.indices.last)
-//        notifyItemRangeChanged(dataList.indices.last, dataList.size)
     }
 
+    override fun setItem(position: Int, data: DATA) {
+        this.dataList[position] = data
+        notifyItemChanged(position)
+
+    }
+
+    override fun rangeInsertItems(positionStart: Int, list: List<DATA>) {
+        this.dataList.addOrReplaceList(positionStart, list)
+        notifyItemRangeInserted(positionStart, list.size)
+    }
+
+    override fun rangeRemoveItems(positionStart: Int, list: List<DATA>) {
+        val isReomveSuccess = this.dataList.removeAll(list)
+        if (isReomveSuccess) notifyItemRangeRemoved(positionStart, list.size)
+    }
 
     abstract fun doWhenCreateHolder(binding: VB, viewHolder: BaseViewBindHolder)
     abstract fun doWhenBindHolder(binding: VB, item: DATA, bindingAdapterPosition: Int, viewHolder: BaseViewBindHolder)
