@@ -1,6 +1,7 @@
 package com.example.baseadapterslibrary.model
 
 interface IListDataModifySetting<T> {
+    suspend fun updateDataSet(newDataSet: MutableList<T>)
 
     fun removeItem(item: T, position: Int)
 

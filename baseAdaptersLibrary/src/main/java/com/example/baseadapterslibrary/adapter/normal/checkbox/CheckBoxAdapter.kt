@@ -33,20 +33,26 @@ abstract class CheckBoxAdapter<VB : ViewBinding, CB : ICheckBox> : BaseRvAdapter
         onItemClickListener = listener
     }
 
-    open suspend fun setData(checkBoxList: MutableList<CB>) {
-        if (checkBoxList.isNotEmpty()) {
+    override suspend fun updateDataSet(newDataSet: MutableList<CB>) {
+
+        if (newDataSet.isNotEmpty()) {
             selectCheckBoxMap.clear()
             selectCheckBoxMultiHaveSortList.clear()
             selectCheckBoxMultiHaveSortMap.clear()
 
-            updateDataSet(checkBoxList)
+            updateDataAction(newDataSet)
 
-            for (i in checkBoxList.indices) {
-                if (checkBoxList[i].isCheck) {
-                    addSelectItem(i)
-                }
+            for (i in newDataSet.indices) {
+
+                val data = dataList[i]
+
+                modifyData(i, data)
             }
         }
+    }
+
+    protected open fun modifyData(position: Int, data: CB) {
+        if (data.isCheck) addSelectItem(position) else removeSelectItem(position)
     }
 
     override fun onBindViewHolder(holder: BaseViewBindHolder, position: Int) {
@@ -113,7 +119,7 @@ abstract class CheckBoxAdapter<VB : ViewBinding, CB : ICheckBox> : BaseRvAdapter
     }
 
     private fun setClickLogic(isSelect: Boolean, position: Int) {
-        if (isSelect) addSelectItem(position) else removeSelectItem(position)
+
 
         notifyItemChanged(position, isSelect)
     }
@@ -176,7 +182,7 @@ abstract class CheckBoxAdapter<VB : ViewBinding, CB : ICheckBox> : BaseRvAdapter
         return selectCheckBoxMap.toMutableMap()
     }
 
-    abstract fun onCheckStateExchange(isCheck: Boolean, binding: VB, checkBox: CB, position: Int)
+    protected abstract fun onCheckStateExchange(isCheck: Boolean, binding: VB, checkBox: CB, position: Int)
 
     open fun removeItem(position: Int) {
         dataList.removeAt(position)

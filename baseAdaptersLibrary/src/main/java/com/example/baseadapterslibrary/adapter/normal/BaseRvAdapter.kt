@@ -28,8 +28,11 @@ abstract class BaseRvAdapter<VB : ViewBinding, DATA> : RecyclerView.Adapter<Base
 
     private var loadStateListener: ((NormalRvLoadState) -> Unit)? = null
 
-    open suspend fun updateDataSet(newDataSet: MutableList<DATA>) = withContext(Dispatchers.Main) {
+    override suspend fun updateDataSet(newDataSet: MutableList<DATA>) = withContext(Dispatchers.Main) {
+        updateDataAction(newDataSet)
+    }
 
+    protected suspend fun updateDataAction(newDataSet: MutableList<DATA>) {
         loadStateListener?.invoke(NormalRvLoadState.NoData(false))
 
         val diff = getDiffWay(newDataSet)

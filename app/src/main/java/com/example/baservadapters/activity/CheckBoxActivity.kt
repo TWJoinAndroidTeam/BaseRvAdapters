@@ -117,9 +117,9 @@ class CheckBoxActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             itemTypeAdapter?.updateDataSet(listOptions)
-            testSingleCheckBoxAdapter?.setData(testSingleList)
-            testMutiCheckBoxAdapter?.setData(testMutiList)
-            testMutiMaxThreeCheckBoxAdapter?.setData(testMaxThreeList)
+            testSingleCheckBoxAdapter?.updateDataSet(testSingleList)
+            testMutiCheckBoxAdapter?.updateDataSet(testMutiList)
+            testMutiMaxThreeCheckBoxAdapter?.updateDataSet(testMaxThreeList)
         }
     }
 }
