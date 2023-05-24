@@ -109,7 +109,7 @@ abstract class CheckBoxAdapter<VB : ViewBinding, CB : ICheckBox> : BaseRvAdapter
 
         setClickLogic(isSelect, position)
 
-        onItemClickCallback?.invoke(cb, position)
+        itemClickCallback?.invoke(cb, position)
     }
 
     private fun setClickLogic(isSelect: Boolean, position: Int) {

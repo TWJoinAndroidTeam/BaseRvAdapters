@@ -35,7 +35,11 @@ abstract class BaseRvAdapter<VB : ViewBinding, DATA> : RecyclerView.Adapter<Base
 
     protected var itemRangeInsertCallback: ((positionStart: Int, list: List<DATA>) -> Unit)? = null
 
-    protected var onItemClickCallback: ((item: DATA, position: Int) -> Unit)? = null
+    protected var itemClickCallback: ((item: DATA, position: Int) -> Unit)? = null
+
+    override fun setItemClickListener(callback: (item: DATA?, position: Int) -> Unit) {
+        this.itemClickCallback = callback
+    }
 
     override fun setItemRangeInsertListener(callback: (positionStart: Int, list: List<DATA>) -> Unit) {
         this.itemRangeInsertCallback = callback
