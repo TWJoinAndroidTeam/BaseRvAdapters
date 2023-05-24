@@ -36,7 +36,7 @@ class HeaderOrFooterActivity : AppCompatActivity() {
 
     private val testSize = 20
 
-    val list: List<MutableList<String>> = listOf(emptyList, testList)
+    var isEmpty: Boolean = false
 
     companion object {
         private const val TYPE_HEADER = "header"
@@ -57,8 +57,6 @@ class HeaderOrFooterActivity : AppCompatActivity() {
     }
 
     private fun initRv() {
-
-        Log.e("???", "initRv")
 
         binding.rvOption.apply {
             layoutManager = GridLayoutManager(this@HeaderOrFooterActivity, 3)
@@ -89,6 +87,8 @@ class HeaderOrFooterActivity : AppCompatActivity() {
                 }
             }
 
+            binding.rvList.scrollToPosition(0)
+
             lifecycleScope.launch {
                 setData()
             }
@@ -115,18 +115,26 @@ class HeaderOrFooterActivity : AppCompatActivity() {
             itemTypeAdapter?.updateDataSet(optionList)
             setData()
         }
-    }
-
-    private suspend fun setData() {
-        testList.clear()
 
         for (i in 0 until testSize) {
             testList.add(i.toString())
         }
+    }
+
+    private suspend fun setData() {
+
 
         delay(500)
 
-        headerAndFooterRvAdapter?.updateDataSet(list.random())
+        val switchList = if (isEmpty) {
+            isEmpty = false
+            emptyList
+        } else {
+            isEmpty = true
+            testList
+        }
+
+        headerAndFooterRvAdapter?.updateDataSet(switchList)
 
     }
 }
