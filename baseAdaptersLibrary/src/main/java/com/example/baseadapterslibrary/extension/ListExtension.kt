@@ -12,3 +12,14 @@ fun <E> MutableList<E>.addOrReplace(position: Int, e: E) {
     }
 }
 
+fun <E> MutableList<E>.addOrReplaceList(startPosition: Int, e: List<E>) {
+
+    val endPosition = startPosition + e.size
+
+    for (i in startPosition..endPosition) {
+        val newDataPosition = i - startPosition
+        val newData = e.getOrNull(newDataPosition) ?: break
+        addOrReplace(i, newData)
+    }
+}
+

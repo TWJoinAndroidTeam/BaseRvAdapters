@@ -11,13 +11,9 @@ import com.example.baseadapterslibrary.view_holder.BaseViewBindHolder
 import com.example.baservadapters.databinding.ItemMyExpandableCheckBoxBinding
 
 class TestCB(
-    override var isExpand: Boolean,
-    override var isCheck: Boolean
-) : IExpandableCheckBox {
-    companion object {
-        val initObj = TestCB(isExpand = false, isCheck = false)
-    }
-}
+    override var isExpand: Boolean=true,
+    override var isCheck: Boolean= false
+) : IExpandableCheckBox
 
 class MyExpandableCheckBoxAdapter : ExpandableCheckBoxAdapter<ItemMyExpandableCheckBoxBinding, TestCB>(false) {
     override fun onExpandChange(viewBinding: ItemMyExpandableCheckBoxBinding, isExpand: Boolean, cb: TestCB, adapterPosition: Int) {

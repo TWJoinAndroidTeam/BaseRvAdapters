@@ -13,13 +13,6 @@ abstract class BaseDraggableRvAdapter<VB : ViewBinding, DATA>(internal open val 
         onItemMoveListener = listener
     }
 
-    protected var onItemDeleteListener: ((deletePosition: Int) -> Unit)? = null
-
-    @JvmName("setOnItemDeleteListener1")
-    fun setOnItemDeleteListener(listener: (deletePosition: Int) -> Unit) {
-        onItemDeleteListener = listener
-    }
-
     override fun onItemMove(fromPosition: Int, toPosition: Int) {
         Collections.swap(dataList, fromPosition, toPosition)
         notifyItemMoved(fromPosition, toPosition)
@@ -27,7 +20,7 @@ abstract class BaseDraggableRvAdapter<VB : ViewBinding, DATA>(internal open val 
     }
 
     override fun onItemDismiss(position: Int) {
-        onItemDeleteListener?.invoke(position)
+        itemRemoveCallback?.invoke(null, position)
     }
 
 }

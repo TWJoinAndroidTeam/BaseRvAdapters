@@ -44,7 +44,9 @@ class ExpandableCheckBoxActivity : AppCompatActivity() {
             adapter = this@ExpandableCheckBoxActivity.adapter.apply {
                 lifecycleScope.launch {
 
-                    setData(MutableList(10) { TestCB.initObj })
+                    updateDataSet(MutableList(10) {
+                        TestCB(isExpand = it % 2 == 0)
+                    })
                 }
             }
         }

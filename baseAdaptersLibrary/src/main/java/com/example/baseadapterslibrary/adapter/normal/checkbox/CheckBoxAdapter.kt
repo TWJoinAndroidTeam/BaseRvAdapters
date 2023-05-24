@@ -27,26 +27,26 @@ abstract class CheckBoxAdapter<VB : ViewBinding, CB : ICheckBox> : BaseRvAdapter
 
     protected var selectCheckBoxMultiHaveSortMap = mutableMapOf<RealDataPosition, SortListIndex>()
 
-    private var onItemClickListener: ((CB, position: Int) -> Unit)? = null
+    override suspend fun updateDataSet(newDataSet: MutableList<CB>) {
 
-    fun setOnItemClickListener(listener: (CB, position: Int) -> Unit) {
-        onItemClickListener = listener
-    }
 
-    open suspend fun setData(checkBoxList: MutableList<CB>) {
-        if (checkBoxList.isNotEmpty()) {
             selectCheckBoxMap.clear()
             selectCheckBoxMultiHaveSortList.clear()
             selectCheckBoxMultiHaveSortMap.clear()
 
-            updateDataSet(checkBoxList)
+            updateDataAction(newDataSet)
 
-            for (i in checkBoxList.indices) {
-                if (checkBoxList[i].isCheck) {
-                    addSelectItem(i)
-                }
+            for (i in newDataSet.indices) {
+
+                val data = dataList[i]
+
+                modifyData(i, data)
             }
-        }
+
+    }
+
+    protected open fun modifyData(position: Int, data: CB) {
+        if (data.isCheck) addSelectItem(position) else removeSelectItem(position)
     }
 
     override fun onBindViewHolder(holder: BaseViewBindHolder, position: Int) {
@@ -109,12 +109,10 @@ abstract class CheckBoxAdapter<VB : ViewBinding, CB : ICheckBox> : BaseRvAdapter
 
         setClickLogic(isSelect, position)
 
-        onItemClickListener?.invoke(cb, position)
+        onItemClickCallback?.invoke(cb, position)
     }
 
     private fun setClickLogic(isSelect: Boolean, position: Int) {
-        if (isSelect) addSelectItem(position) else removeSelectItem(position)
-
         notifyItemChanged(position, isSelect)
     }
 
@@ -176,14 +174,7 @@ abstract class CheckBoxAdapter<VB : ViewBinding, CB : ICheckBox> : BaseRvAdapter
         return selectCheckBoxMap.toMutableMap()
     }
 
-    abstract fun onCheckStateExchange(isCheck: Boolean, binding: VB, checkBox: CB, position: Int)
-
-    open fun removeItem(position: Int) {
-        dataList.removeAt(position)
-        selectCheckBoxMap.remove(position)
-        notifyItemRemoved(position)
-        notifyItemRangeChanged(position, dataList.size)
-    }
+    protected abstract fun onCheckStateExchange(isCheck: Boolean, binding: VB, checkBox: CB, position: Int)
 
     private fun addSelectItem(position: Int) {
 

@@ -38,6 +38,10 @@ class CheckBoxActivity : AppCompatActivity() {
 
     private val listOptions = mutableListOf("single", "muti", "max 3")
 
+    val testSingleList = mutableListOf<CheckBoxModel<Int>>()
+    val testMutiList = mutableListOf<CheckBoxModel<Int>>()
+    val testMaxThreeList = mutableListOf<CheckBoxModel<Int>>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -70,6 +74,27 @@ class CheckBoxActivity : AppCompatActivity() {
             adapter = testMutiMaxThreeCheckBoxAdapter
         }
 
+        testSingleCheckBoxAdapter?.setRemoveItemListener { item, position ->
+            testSingleList.removeAt(position)
+            lifecycleScope.launch {
+                testSingleCheckBoxAdapter?.updateDataSet(testSingleList)
+            }
+        }
+
+        testMutiCheckBoxAdapter?.setRemoveItemListener { item, position ->
+        testMutiList.removeAt(position)
+            lifecycleScope.launch {
+                testSingleCheckBoxAdapter?.updateDataSet(testSingleList)
+            }
+        }
+
+        testMutiMaxThreeCheckBoxAdapter?.setRemoveItemListener { item, position ->
+        testMaxThreeList.removeAt(position)
+            lifecycleScope.launch {
+                testSingleCheckBoxAdapter?.updateDataSet(testSingleList)
+            }
+        }
+
         viewBinding.rvOption.apply {
             layoutManager = GridLayoutManager(this@CheckBoxActivity, listOptions.size)
             addItemDecoration(
@@ -100,13 +125,11 @@ class CheckBoxActivity : AppCompatActivity() {
                 }
             }
         }
+
+
     }
 
     private fun setData() {
-
-        val testSingleList = mutableListOf<CheckBoxModel<Int>>()
-        val testMutiList = mutableListOf<CheckBoxModel<Int>>()
-        val testMaxThreeList = mutableListOf<CheckBoxModel<Int>>()
 
 
         for (i in 0 until testSize) {
@@ -117,9 +140,9 @@ class CheckBoxActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             itemTypeAdapter?.updateDataSet(listOptions)
-            testSingleCheckBoxAdapter?.setData(testSingleList)
-            testMutiCheckBoxAdapter?.setData(testMutiList)
-            testMutiMaxThreeCheckBoxAdapter?.setData(testMaxThreeList)
+            testSingleCheckBoxAdapter?.updateDataSet(testSingleList)
+            testMutiCheckBoxAdapter?.updateDataSet(testMutiList)
+            testMutiMaxThreeCheckBoxAdapter?.updateDataSet(testMaxThreeList)
         }
     }
 }

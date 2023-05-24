@@ -1,16 +1,16 @@
 package com.example.baseadapterslibrary.adapter.normal.checkbox
 
 import androidx.viewbinding.ViewBinding
+import com.example.baseadapterslibrary.model.IExpandSetting
 import com.example.baseadapterslibrary.model.IExpandableCheckBox
 import com.example.baseadapterslibrary.view_holder.BaseViewBindHolder
 
-abstract class ExpandableCheckBoxAdapter<VB : ViewBinding, CB : IExpandableCheckBox>(private val needRememberDefaultUtilChange: Boolean) : CheckBoxAdapter<VB, CB>() {
+/**
+ * @param needResetToDefaultSelectAfterdloseExpand 是否需要在收起展開狀態之後重置回原本的checkbox邏輯
+ */
+abstract class ExpandableCheckBoxAdapter<VB : ViewBinding, CB : IExpandableCheckBox>(private val needResetToDefaultSelectAfterdloseExpand: Boolean) : CheckBoxAdapter<VB, CB>(), IExpandSetting<VB> {
 
-    private var isExpand = false
-
-    var realSelectCheckBoxMap = mutableMapOf<Int, CB>()
-
-    private var realDataList: MutableList<CB> = mutableListOf()
+    private val realSelectCheckBoxMap = mutableMapOf<Int, CB>()
 
     /**
      * 會根據isExpand的狀態來決定ＵＩ初始化
@@ -20,7 +20,7 @@ abstract class ExpandableCheckBoxAdapter<VB : ViewBinding, CB : IExpandableCheck
         val item = dataList[adapterPosition]
         doWhenBindHolder(holder.binding as VB, item, adapterPosition, holder)
         onCheckStateExchange(selectCheckBoxMap.containsKey(position), holder.binding, item, position)
-        onExpandChange(holder.binding, isExpand, item, position)
+        onExpandChange(holder.binding, item.isExpand, item, position)
     }
 
     override fun onBindViewHolder(holder: BaseViewBindHolder, position: Int, payloads: MutableList<Any>) {
@@ -45,8 +45,7 @@ abstract class ExpandableCheckBoxAdapter<VB : ViewBinding, CB : IExpandableCheck
         }
     }
 
-    fun changeExpandAllData(isExpand: Boolean) {
-        this.isExpand = isExpand
+    override fun changeExpandAllData(isExpand: Boolean) {
         when (isExpand) {
             true -> {
                 openExpandAllData()
@@ -69,23 +68,19 @@ abstract class ExpandableCheckBoxAdapter<VB : ViewBinding, CB : IExpandableCheck
     private fun closeExpandAllData() {
         dataList.forEachIndexed { index, cb ->
             cb.isExpand = false
-            if (needRememberDefaultUtilChange) {
+            if (needResetToDefaultSelectAfterdloseExpand) {
                 val defaultSelectItem = realSelectCheckBoxMap[index]
                 if (defaultSelectItem != null) {
                     clickCheckBox(defaultSelectItem, index)
                 }
             }
             notifyItemChanged(index, cb)
-
         }
     }
 
-    abstract fun onExpandChange(viewBinding: VB, isExpand: Boolean, cb: CB, adapterPosition: Int)
+    protected abstract fun onExpandChange(viewBinding: VB, isExpand: Boolean, cb: CB, adapterPosition: Int)
 
-    /**
-     * 組件默認點擊狀態
-     */
-    fun clickExpandItem(binding: VB, adapterPosition: Int) {
+    override fun clickExpandItem(binding: VB, adapterPosition: Int) {
 
         val newState = !dataList[adapterPosition].isExpand
 
@@ -99,10 +94,7 @@ abstract class ExpandableCheckBoxAdapter<VB : ViewBinding, CB : IExpandableCheck
         )
     }
 
-    /**
-     * 指定任意位置組件更改為任意狀態
-     */
-    fun changeExpandItem(binding: VB, isExpand: Boolean, adapterPosition: Int) {
+    override fun changeExpandItem(binding: VB, isExpand: Boolean, adapterPosition: Int) {
 
         dataList[adapterPosition].isExpand = isExpand
 
@@ -112,29 +104,5 @@ abstract class ExpandableCheckBoxAdapter<VB : ViewBinding, CB : IExpandableCheck
             dataList[adapterPosition],
             adapterPosition
         )
-    }
-
-    override suspend fun setData(checkBoxList: MutableList<CB>) {
-
-        realDataList.clear()
-        realDataList.addAll(checkBoxList)
-
-        if (checkBoxList.isNotEmpty()) {
-            selectCheckBoxMap.clear()
-
-            for (i in checkBoxList.indices) {
-                if (checkBoxList[i].isCheck) {
-                    selectCheckBoxMap[i] = checkBoxList[i]
-                    realSelectCheckBoxMap[i] = checkBoxList[i]
-                }
-            }
-            updateDataSet(checkBoxList)
-        }
-    }
-
-    override fun removeItem(position: Int) {
-        realDataList.removeAt(position)
-        realSelectCheckBoxMap.remove(position)
-        super.removeItem(position)
     }
 }

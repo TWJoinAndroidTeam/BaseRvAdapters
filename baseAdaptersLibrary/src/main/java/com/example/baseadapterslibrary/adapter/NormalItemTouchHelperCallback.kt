@@ -44,6 +44,6 @@ abstract class NormalItemTouchHelperCallback(var mAdapter: IItemTouchHelper?) : 
     //左右滑動監聽事件
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
         //呼叫ITHelperInterface的方法
-        mAdapter!!.onItemDismiss(viewHolder.absoluteAdapterPosition)
+        mAdapter!!.onItemDismiss(viewHolder.bindingAdapterPosition)
     }
 }

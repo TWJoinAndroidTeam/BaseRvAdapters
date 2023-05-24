@@ -25,13 +25,14 @@ class DemoPagingRvAdapter : BasePagingRvAdapter<ItemCheckboxBinding, String>(dif
         return ItemCheckboxBinding::inflate
     }
 
+
     override fun doWhenCreateViewHolder(binding: ItemCheckboxBinding, viewHolder: LifecycleOwnerViewBindHolder) {
 
     }
 
 
     override fun doWhenBindHolder(binding: ItemCheckboxBinding, item: String, position: Int) {
-        onItemClickListener?.invoke(item, position)
+        onItemClickCallback?.invoke(item)
     }
 
     override fun doWhenBindPayload(payload: Any, binding: ItemCheckboxBinding, item: String, position: Int) {
