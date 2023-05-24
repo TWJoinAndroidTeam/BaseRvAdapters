@@ -27,15 +27,9 @@ abstract class CheckBoxAdapter<VB : ViewBinding, CB : ICheckBox> : BaseRvAdapter
 
     protected var selectCheckBoxMultiHaveSortMap = mutableMapOf<RealDataPosition, SortListIndex>()
 
-    private var onItemClickListener: ((CB, position: Int) -> Unit)? = null
-
-    fun setOnItemClickListener(listener: (CB, position: Int) -> Unit) {
-        onItemClickListener = listener
-    }
-
     override suspend fun updateDataSet(newDataSet: MutableList<CB>) {
 
-        if (newDataSet.isNotEmpty()) {
+
             selectCheckBoxMap.clear()
             selectCheckBoxMultiHaveSortList.clear()
             selectCheckBoxMultiHaveSortMap.clear()
@@ -48,7 +42,7 @@ abstract class CheckBoxAdapter<VB : ViewBinding, CB : ICheckBox> : BaseRvAdapter
 
                 modifyData(i, data)
             }
-        }
+
     }
 
     protected open fun modifyData(position: Int, data: CB) {
@@ -115,12 +109,10 @@ abstract class CheckBoxAdapter<VB : ViewBinding, CB : ICheckBox> : BaseRvAdapter
 
         setClickLogic(isSelect, position)
 
-        onItemClickListener?.invoke(cb, position)
+        onItemClickCallback?.invoke(cb, position)
     }
 
     private fun setClickLogic(isSelect: Boolean, position: Int) {
-
-
         notifyItemChanged(position, isSelect)
     }
 
@@ -183,13 +175,6 @@ abstract class CheckBoxAdapter<VB : ViewBinding, CB : ICheckBox> : BaseRvAdapter
     }
 
     protected abstract fun onCheckStateExchange(isCheck: Boolean, binding: VB, checkBox: CB, position: Int)
-
-    open fun removeItem(position: Int) {
-        dataList.removeAt(position)
-        selectCheckBoxMap.remove(position)
-        notifyItemRemoved(position)
-        notifyItemRangeChanged(position, dataList.size)
-    }
 
     private fun addSelectItem(position: Int) {
 

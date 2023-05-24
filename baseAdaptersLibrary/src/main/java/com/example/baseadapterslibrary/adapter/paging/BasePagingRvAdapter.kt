@@ -7,25 +7,27 @@ import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.viewbinding.ViewBinding
 import com.example.baseadapterslibrary.adapter.normal.checkbox.Inflate
+import com.example.baseadapterslibrary.model.IPPagingRvSetting
 import com.example.baseadapterslibrary.view_holder.LifecycleOwnerViewBindHolder
 
 
 abstract class BasePagingRvAdapter<VB : ViewBinding, DATA : Any>(
     diffCallback: DiffUtil.ItemCallback<DATA>,
-) : PagingDataAdapter<DATA, LifecycleOwnerViewBindHolder>(diffCallback) {
+) : PagingDataAdapter<DATA, LifecycleOwnerViewBindHolder>(diffCallback), IPPagingRvSetting<DATA> {
 
     lateinit var context: Context
 
     val isContextInitialized get() = this::context.isInitialized
 
-    protected var onItemClickListener: ((DATA, position: Int) -> Unit)? = null
+    protected var itemRemoveCallback: ((item: DATA?) -> Unit)? = null
+
+    protected var itemAddCallback: ((item: DATA) -> Unit)? = null
+
+    protected var itemSetCallback: ((item: DATA) -> Unit)? = null
+
+    protected var onItemClickCallback: ((item: DATA) -> Unit)? = null
 
     abstract fun getViewBindingInflate(viewType: Int): Inflate<VB>
-
-    @JvmName("setOnItemClickListener1")
-    fun setOnItemClickListener(listener: (DATA, position: Int) -> Unit) {
-        onItemClickListener = listener
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LifecycleOwnerViewBindHolder {
         if (!isContextInitialized) context = parent.context
@@ -88,6 +90,22 @@ abstract class BasePagingRvAdapter<VB : ViewBinding, DATA : Any>(
     abstract fun doWhenBindHolder(binding: VB, item: DATA, position: Int)
 
     abstract fun doWhenBindPayload(payload: Any, binding: VB, item: DATA, position: Int)
+    override fun setItemRemoveListener(listener: (item: DATA?) -> Unit) {
+        this.itemRemoveCallback = listener
+    }
+
+    override fun setItemAddListener(listener: (item: DATA) -> Unit) {
+        this.itemAddCallback = listener
+    }
+
+    override fun setItemSetListener(listener: (item: DATA) -> Unit) {
+        this.itemSetCallback = listener
+    }
+
+
+    override fun setItemClickListener(listener: (item: DATA) -> Unit) {
+        this.onItemClickCallback = listener
+    }
 
 
 }

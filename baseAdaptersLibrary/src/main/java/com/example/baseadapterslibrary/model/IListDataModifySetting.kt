@@ -1,17 +1,18 @@
 package com.example.baseadapterslibrary.model
 
 interface IListDataModifySetting<T> {
+
     suspend fun updateDataSet(newDataSet: MutableList<T>)
 
-    fun removeItem(item: T, position: Int)
+    fun setRemoveItemListener(callback: (item: T?, position: Int) -> Unit)
 
-    fun addItem(data: T)
+    fun setInsertItemListener(callback: (item: T, position: Int) -> Unit)
 
-    fun setItem(position: Int, data: T)
+    fun setAddItemListener(callback: (item: T) -> Unit)
 
-    fun rangeRemoveItems(positionStart:Int,list: List<T>)
+    fun setItemRangeRemoveListener(callback: (positionStart: Int, list: List<T>) -> Unit)
 
-    fun rangeInsertItems(positionStart:Int,list: List<T>)
+    fun setItemRangeInsertListener(callback: (positionStart: Int, list: List<T>) -> Unit)
 
 }
 

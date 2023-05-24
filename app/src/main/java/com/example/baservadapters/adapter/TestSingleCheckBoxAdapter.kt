@@ -23,6 +23,7 @@ class TestSingleCheckBoxAdapter : CheckBoxAdapter<ItemCheckboxBinding, CheckBoxM
 
     override fun doWhenBindHolder(binding: ItemCheckboxBinding, checkBox: CheckBoxModel<Int>, position: Int, viewHolder: BaseViewBindHolder) {
         binding.txtNumber.text = checkBox.item.toString()
+
         binding.root.setOnClickListener {
             clickCheckBox(checkBox, position)
         }

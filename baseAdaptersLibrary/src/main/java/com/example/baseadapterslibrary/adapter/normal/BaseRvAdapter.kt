@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
-import com.example.baseadapterslibrary.extension.addOrReplaceList
 import com.example.baseadapterslibrary.model.IListDataModifySetting
 import com.example.baseadapterslibrary.model.NormalRvLoadState
 import com.example.baseadapterslibrary.view_holder.BaseViewBindHolder
@@ -24,25 +23,55 @@ abstract class BaseRvAdapter<VB : ViewBinding, DATA> : RecyclerView.Adapter<Base
 
     val isContextInitialized get() = this::context.isInitialized
 
-    abstract fun getViewBindingInflate(viewType: Int): Inflate<VB>
+    protected var loadStateCallback: ((NormalRvLoadState) -> Unit)? = null
 
-    private var loadStateListener: ((NormalRvLoadState) -> Unit)? = null
+    protected var itemRemoveCallback: ((item: DATA?, position: Int) -> Unit)? = null
+
+    protected var itemAddCallback: ((item: DATA) -> Unit)? = null
+
+    protected var itemSetCallback: ((item: DATA, position: Int) -> Unit)? = null
+
+    protected var itemRangeRemoveCallback: ((positionStart: Int, list: List<DATA>) -> Unit)? = null
+
+    protected var itemRangeInsertCallback: ((positionStart: Int, list: List<DATA>) -> Unit)? = null
+
+    protected var onItemClickCallback: ((item: DATA, position: Int) -> Unit)? = null
+
+    override fun setItemRangeInsertListener(callback: (positionStart: Int, list: List<DATA>) -> Unit) {
+        this.itemRangeInsertCallback = callback
+    }
+
+    override fun setItemRangeRemoveListener(callback: (positionStart: Int, list: List<DATA>) -> Unit) {
+        this.itemRangeRemoveCallback = callback
+    }
+
+    override fun setAddItemListener(callback: (item: DATA) -> Unit) {
+        this.itemAddCallback = callback
+    }
+
+    override fun setInsertItemListener(callback: (item: DATA, position: Int) -> Unit) {
+        this.itemSetCallback = callback
+    }
+
+    override fun setRemoveItemListener(callback: (item: DATA?, position: Int) -> Unit) {
+        this.itemRemoveCallback = callback
+    }
 
     override suspend fun updateDataSet(newDataSet: MutableList<DATA>) = withContext(Dispatchers.Main) {
         updateDataAction(newDataSet)
     }
 
     protected suspend fun updateDataAction(newDataSet: MutableList<DATA>) {
-        loadStateListener?.invoke(NormalRvLoadState.NoData(false))
+        loadStateCallback?.invoke(NormalRvLoadState.NoData(false))
 
         val diff = getDiffWay(newDataSet)
         dataList.clear()
         dataList.addAll(newDataSet)
 
         if (dataList.isEmpty()) {
-            loadStateListener?.invoke(NormalRvLoadState.NoData(true))
+            loadStateCallback?.invoke(NormalRvLoadState.NoData(true))
         } else {
-            loadStateListener?.invoke(NormalRvLoadState.HaveData)
+            loadStateCallback?.invoke(NormalRvLoadState.HaveData)
         }
 
         withContext(Dispatchers.Main) {
@@ -97,33 +126,7 @@ abstract class BaseRvAdapter<VB : ViewBinding, DATA> : RecyclerView.Adapter<Base
 
     override fun getItemCount() = dataList.size
 
-    override fun removeItem(item: DATA, position: Int) {
-        dataList.removeAt(position)
-        notifyItemRemoved(position)
-        notifyItemRangeChanged(position, dataList.size)
-    }
-
-    override fun addItem(data: DATA) {
-        this.dataList.add(data)
-        notifyItemInserted(dataList.indices.last)
-    }
-
-    override fun setItem(position: Int, data: DATA) {
-        this.dataList[position] = data
-        notifyItemChanged(position)
-
-    }
-
-    override fun rangeInsertItems(positionStart: Int, list: List<DATA>) {
-        this.dataList.addOrReplaceList(positionStart, list)
-        notifyItemRangeInserted(positionStart, list.size)
-    }
-
-    override fun rangeRemoveItems(positionStart: Int, list: List<DATA>) {
-        val isReomveSuccess = this.dataList.removeAll(list)
-        if (isReomveSuccess) notifyItemRangeRemoved(positionStart, list.size)
-    }
-
+    abstract fun getViewBindingInflate(viewType: Int): Inflate<VB>
     abstract fun doWhenCreateHolder(binding: VB, viewHolder: BaseViewBindHolder)
     abstract fun doWhenBindHolder(binding: VB, item: DATA, bindingAdapterPosition: Int, viewHolder: BaseViewBindHolder)
     abstract fun doWhenBindPayload(payload: Any, binding: VB, item: DATA, bindingAdapterPosition: Int, viewHolder: BaseViewBindHolder)
@@ -162,6 +165,6 @@ abstract class BaseRvAdapter<VB : ViewBinding, DATA> : RecyclerView.Adapter<Base
     }
 
     fun setLoadStateAdapterListener(listener: (NormalRvLoadState) -> Unit) {
-        this.loadStateListener = listener
+        this.loadStateCallback = listener
     }
 }
