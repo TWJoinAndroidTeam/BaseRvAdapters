@@ -4,6 +4,8 @@ interface IListDataModifySetting<T> {
 
     suspend fun updateDataSet(newDataSet: MutableList<T>)
 
+    fun setItemClickListener(callback: (item: T?, position: Int) -> Unit)
+
     fun setRemoveItemListener(callback: (item: T?, position: Int) -> Unit)
 
     fun setInsertItemListener(callback: (item: T, position: Int) -> Unit)
