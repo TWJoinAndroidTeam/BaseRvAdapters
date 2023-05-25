@@ -82,14 +82,14 @@ class CheckBoxActivity : AppCompatActivity() {
         }
 
         testMutiCheckBoxAdapter?.setRemoveItemListener { item, position ->
-        testMutiList.removeAt(position)
+            testMutiList.removeAt(position)
             lifecycleScope.launch {
                 testSingleCheckBoxAdapter?.updateDataSet(testSingleList)
             }
         }
 
         testMutiMaxThreeCheckBoxAdapter?.setRemoveItemListener { item, position ->
-        testMaxThreeList.removeAt(position)
+            testMaxThreeList.removeAt(position)
             lifecycleScope.launch {
                 testSingleCheckBoxAdapter?.updateDataSet(testSingleList)
             }

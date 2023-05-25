@@ -29,19 +29,17 @@ abstract class CheckBoxAdapter<VB : ViewBinding, CB : ICheckBox> : BaseRvAdapter
 
     override suspend fun updateDataSet(newDataSet: MutableList<CB>) {
 
+        selectCheckBoxMap.clear()
+        selectCheckBoxMultiHaveSortList.clear()
+        selectCheckBoxMultiHaveSortMap.clear()
 
-            selectCheckBoxMap.clear()
-            selectCheckBoxMultiHaveSortList.clear()
-            selectCheckBoxMultiHaveSortMap.clear()
+        updateDataAction(newDataSet)
 
-            updateDataAction(newDataSet)
-
-            for (i in newDataSet.indices) {
-
-                val data = dataList[i]
-
-                modifyData(i, data)
+        for (i in newDataSet.indices) {
+            if (newDataSet[i].isCheck) {
+                addSelectItem(i)
             }
+        }
 
     }
 
@@ -113,6 +111,7 @@ abstract class CheckBoxAdapter<VB : ViewBinding, CB : ICheckBox> : BaseRvAdapter
     }
 
     private fun setClickLogic(isSelect: Boolean, position: Int) {
+        if (isSelect) addSelectItem(position) else removeSelectItem(position)
         notifyItemChanged(position, isSelect)
     }
 

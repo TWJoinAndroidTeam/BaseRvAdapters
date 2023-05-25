@@ -29,6 +29,7 @@ class TestSingleCheckBoxAdapter : CheckBoxAdapter<ItemCheckboxBinding, CheckBoxM
         }
     }
 
+
     override fun onCheckStateExchange(isCheck: Boolean, binding: ItemCheckboxBinding, checkBox: CheckBoxModel<Int>, position: Int) {
         if (isCheck) {
             binding.txtNumber.setTextColor(ContextCompat.getColor(context, android.R.color.white))
