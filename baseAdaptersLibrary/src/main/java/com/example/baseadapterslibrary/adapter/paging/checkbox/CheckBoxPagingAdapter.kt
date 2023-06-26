@@ -17,16 +17,13 @@ abstract class CheckBoxPagingAdapter<VB : ViewBinding, CB : IPagingCheckBox>(
 
     abstract val chooserMode: ChooserMode
 
-    var liveIsExpand: MutableLiveData<Boolean> = MutableLiveData(false)
-
-    //由於 paging 只能撈部分資料，所以需要變數讓之後資料onBind時知道被選取
-    private var isSelectAll = false
-
     private val liveSelectCheckBoxMap = MutableLiveData<MutableMap<Int, CB>>()
 
     private var selectCheckBoxMap = mutableMapOf<Int, CB>()
 
     private var onCheckBoxClickListener: ((CB, position: Int) -> Unit)? = null
+
+    protected abstract fun initLogic(cb: CB)
 
     fun setOnCheckBoxClickListener(listener: (CB, position: Int) -> Unit) {
         onCheckBoxClickListener = listener
@@ -37,14 +34,6 @@ abstract class CheckBoxPagingAdapter<VB : ViewBinding, CB : IPagingCheckBox>(
     @JvmName("setOnCheckBoxChangeSelectAllListener1")
     fun setOnCheckBoxChangeSelectAllListener(listener: (MutableMap<Int, CB>, isSelectAll: Boolean) -> Unit) {
         onCheckBoxChangeSelectAllListener = listener
-    }
-
-    /**
-     * 改變開展狀態
-     */
-    fun changeExpand() {
-        val expandStatus = liveIsExpand.value
-        liveIsExpand.postValue(!expandStatus!!)
     }
 
     /**
@@ -115,7 +104,6 @@ abstract class CheckBoxPagingAdapter<VB : ViewBinding, CB : IPagingCheckBox>(
      * Select all items.
      */
     override fun selectAll() {
-        isSelectAll = true
         for (i in 0 until itemCount) {
             if (!isItemSelected(i)) getItem(i)?.let {
                 selectCheckBoxMap[i] = it
@@ -135,7 +123,6 @@ abstract class CheckBoxPagingAdapter<VB : ViewBinding, CB : IPagingCheckBox>(
     }
 
     override fun clearAll() {
-        isSelectAll = false
         for (i in 0 until itemCount) {
             getItem(i)?.let {
                 it.isCheck = false
@@ -174,22 +161,23 @@ abstract class CheckBoxPagingAdapter<VB : ViewBinding, CB : IPagingCheckBox>(
         return holder
     }
 
+    protected open fun doAfterInit(data: CB, position: Int, holder: LifecycleOwnerViewBindHolder) {
+        if (data.isCheck) {
+            selectCheckBoxMap[position] = data
+        } else {
+            removeItemFromSelection(position)
+        }
+        onSelectChange(holder.binding as VB, data, position, data.isCheck)
+    }
+
     override fun onBindViewHolder(holder: LifecycleOwnerViewBindHolder, position: Int) {
         super.onBindViewHolder(holder, position)
 
         val data = getItem(position)
 
-        if (isSelectAll) {
-            data?.isCheck = true
-        }
-
-        if (data?.isInit == false) {
-            if (data.isCheck) {
-                selectCheckBoxMap[position] = data
-            } else {
-                removeItemFromSelection(position)
-            }
-            onSelectChange(holder.binding as VB, data, position, data.isCheck)
+        if (data != null && !data.isInit) {
+            initLogic(data)
+            doAfterInit(data, position, holder)
         }
 
         //觀察是否被選取，以 view holder 做為生命週期
@@ -200,19 +188,9 @@ abstract class CheckBoxPagingAdapter<VB : ViewBinding, CB : IPagingCheckBox>(
             }
         })
 
-        //觀察是否展開,，以 view holder 做為生命週期
-        liveIsExpand.observe(holder, Observer {
-            if (data != null) {
-                onExpandChange(holder.binding as VB, data, position, it)
-            }
-        })
-
         //最後改變init值，代表處理過bind，剩下的資料更換邏輯就交給live data
         data?.isInit = true
     }
-
-
-    abstract fun onExpandChange(binding: VB, item: CB, position: Int, isExpand: Boolean)
 
     abstract fun onSelectChange(binding: VB, item: CB, position: Int, isSelect: Boolean)
 }
