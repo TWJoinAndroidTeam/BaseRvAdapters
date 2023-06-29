@@ -61,11 +61,11 @@ abstract class BaseRvAdapter<VB : ViewBinding, DATA> : RecyclerView.Adapter<Base
         this.itemRemoveCallback = callback
     }
 
-    override suspend fun updateDataSet(newDataSet: MutableList<DATA>) = withContext(Dispatchers.Main) {
+    final override suspend fun updateDataSet(newDataSet: MutableList<DATA>) = withContext(Dispatchers.Main) {
         updateDataAction(newDataSet)
     }
 
-    protected suspend fun updateDataAction(newDataSet: MutableList<DATA>) {
+    protected open suspend fun updateDataAction(newDataSet: MutableList<DATA>) {
         loadStateCallback?.invoke(NormalRvLoadState.NoData(false))
 
         val diff = getDiffWay(newDataSet)

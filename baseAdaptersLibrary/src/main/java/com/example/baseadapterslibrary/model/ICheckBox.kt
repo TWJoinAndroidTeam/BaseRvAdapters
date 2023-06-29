@@ -13,16 +13,22 @@ interface ICheckBox : Cloneable {
 }
 
 /**
- * @property isInit
- * 由於paging data 無法預先取得所有資料，所以 isExpand 不適用，並增加isInit判斷資料是否初次載入
+ * @property isInit 由於paging data 無法預先取得所有資料，所以 isExpand 不適用，並增加isInit判斷資料是否初次載入
  */
-interface IPagingCheckBox : ICheckBox {
+interface IPaging {
     var isInit: @RawValue Boolean
 }
 
-interface IExpandableCheckBox : ICheckBox {
+interface IExpandable {
     var isExpand: Boolean
 }
+
+interface IPagingCheckBox : ICheckBox, IPaging
+
+
+interface IPagingExpandableCheckBox : IPagingCheckBox, IExpandable
+
+interface IExpandableCheckBox : ICheckBox, IExpandable
 
 
 @Parcelize
