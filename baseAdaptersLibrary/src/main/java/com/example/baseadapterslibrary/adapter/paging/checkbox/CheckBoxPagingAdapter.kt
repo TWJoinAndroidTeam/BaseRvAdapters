@@ -4,6 +4,7 @@ import android.view.ViewGroup
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.example.baseadapterslibrary.adapter.paging.BasePagingRvAdapter
 import com.example.baseadapterslibrary.model.ChooserMode
@@ -11,35 +12,35 @@ import com.example.baseadapterslibrary.model.ICheckBoxSetting
 import com.example.baseadapterslibrary.model.IPagingCheckBox
 import com.example.baseadapterslibrary.view_holder.LifecycleOwnerViewBindHolder
 
-abstract class CheckBoxPagingAdapter<VB : ViewBinding, CB : IPagingCheckBox>(
-    diffCallback: DiffUtil.ItemCallback<CB>,
-) : BasePagingRvAdapter<VB, CB>(diffCallback), ICheckBoxSetting<CB> {
+abstract class CheckBoxPagingAdapter<VB : ViewBinding, CB : IPagingCheckBox, ID>(diffCallback: DiffUtil.ItemCallback<CB>) : BasePagingRvAdapter<VB, CB>(diffCallback) {
 
     abstract val chooserMode: ChooserMode
 
-    private val liveSelectCheckBoxMap = MutableLiveData<MutableMap<Int, CB>>()
+    private val liveSelectCheckBoxMap = MutableLiveData<MutableMap<ID, CB>>()
 
-    private var selectCheckBoxMap = mutableMapOf<Int, CB>()
+    private var selectCheckBoxMap = mutableMapOf<ID, CB>()
 
     private var onCheckBoxClickListener: ((CB, position: Int) -> Unit)? = null
 
-    protected abstract fun initLogic(cb: CB)
+    protected abstract fun getDataUUid(data: CB): ID
+
+    private var checkStatus = CheckBoxStatus.Normal
 
     fun setOnCheckBoxClickListener(listener: (CB, position: Int) -> Unit) {
         onCheckBoxClickListener = listener
     }
 
-    protected var onCheckBoxChangeSelectAllListener: ((MutableMap<Int, CB>, isSelectAll: Boolean) -> Unit)? = null
+    protected var onCheckBoxChangeSelectAllListener: ((MutableMap<ID, CB>, isSelectAll: Boolean) -> Unit)? = null
 
     @JvmName("setOnCheckBoxChangeSelectAllListener1")
-    fun setOnCheckBoxChangeSelectAllListener(listener: (MutableMap<Int, CB>, isSelectAll: Boolean) -> Unit) {
+    fun setOnCheckBoxChangeSelectAllListener(listener: (MutableMap<ID, CB>, isSelectAll: Boolean) -> Unit) {
         onCheckBoxChangeSelectAllListener = listener
     }
 
     /**
      * 改變選擇狀態時，只需使用這個方法
      */
-    open fun changeSelect(position: Int) {
+    open fun clickCheckBox(position: Int) {
         val isSelect = isItemSelected(position)
 
         val checkBoxModel = getItem(position)
@@ -75,99 +76,104 @@ abstract class CheckBoxPagingAdapter<VB : ViewBinding, CB : IPagingCheckBox>(
                     }
                 }
             }
+
+            checkStatus = CheckBoxStatus.Normal
         }
     }
 
     /**
-     * Add an item it the selection.
+     * @param position Int
+     * @param checkBoxModel CB
+     * @return Boolean 是否加入成功
      */
-    private fun addItemToSelection(position: Int, checkBoxModel: CB) {
-        selectCheckBoxMap[position] = checkBoxModel
+    private fun addItemToSelection(position: Int, checkBoxModel: CB): Boolean {
+        val uuid = getDataUUid(getItem(position) ?: return false)
+        selectCheckBoxMap[uuid] = checkBoxModel
         liveSelectCheckBoxMap.value = selectCheckBoxMap
+        return true
     }
 
     /**
      * Remove an item to the selection.
      */
-    private fun removeItemFromSelection(position: Int) {
-        selectCheckBoxMap.remove(position)
+    private fun removeItemFromSelection(position: Int): Boolean {
+        val uuid = getDataUUid(getItem(position) ?: return false)
+        selectCheckBoxMap.remove(uuid)
         liveSelectCheckBoxMap.value = selectCheckBoxMap
+        return true
     }
 
     /**
      * Indicate if an item is already selected.
      */
-    private fun isItemSelected(position: Int) = selectCheckBoxMap.contains(position)
+    private fun isItemSelected(position: Int): Boolean {
+        val data = getItem(position) ?: return false
+        return selectCheckBoxMap.contains(getDataUUid(data))
+    }
 
 
     /**
      * Select all items.
      */
-    override fun selectAll() {
+    fun selectAll() {
         for (i in 0 until itemCount) {
             if (!isItemSelected(i)) getItem(i)?.let {
-                selectCheckBoxMap[i] = it
+                selectCheckBoxMap[getDataUUid(it)] = it
                 it.isCheck = true
             }
         }
+        checkStatus = CheckBoxStatus.CheckAll
         liveSelectCheckBoxMap.value = selectCheckBoxMap
         onCheckBoxChangeSelectAllListener?.invoke(selectCheckBoxMap, true)
     }
 
-    /**
-     * 單純清除資料，不改變資料原始型態
-     */
-    fun resetSelect() {
-        selectCheckBoxMap.clear()
-        liveSelectCheckBoxMap.value = selectCheckBoxMap
-    }
-
-    override fun clearAll() {
+    fun clearAll() {
         for (i in 0 until itemCount) {
             getItem(i)?.let {
                 it.isCheck = false
             }
         }
-        resetSelect()
+        selectCheckBoxMap.clear()
+        liveSelectCheckBoxMap.value = selectCheckBoxMap
+        checkStatus = CheckBoxStatus.UncheckAll
         onCheckBoxChangeSelectAllListener?.invoke(selectCheckBoxMap, false)
     }
 
-    override fun reverseSelect() {
 
-    }
-
-    override fun getSelectDataPosition(): List<Int> {
-        return selectCheckBoxMap.keys.toList()
-    }
-
-    override fun getSelectDataList(): MutableList<CB> {
+    fun getSelectDataList(): MutableList<CB> {
         val items = mutableListOf<CB>()
-        for (position in selectCheckBoxMap.keys) {
-            val data = getItem(position)
-            if (data != null) {
-                items.add(data)
-            }
-        }
+        items.addAll(selectCheckBoxMap.values.map { it })
         return items
     }
 
-    override fun getSelectDataMap(): MutableMap<Int, CB> {
+    fun getSelectDataMap(): MutableMap<ID, CB> {
         return selectCheckBoxMap
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LifecycleOwnerViewBindHolder {
         val holder = super.onCreateViewHolder(parent, viewType)
         holder.lifecycleCreate()
+
         return holder
     }
 
-    protected open fun doAfterInit(data: CB, position: Int, holder: LifecycleOwnerViewBindHolder) {
+    private fun doCheckLogicWhenInit(data: CB, position: Int, holder: LifecycleOwnerViewBindHolder) {
+
+        if (checkStatus == CheckBoxStatus.CheckAll) {
+            data.isCheck = true
+        } else if (checkStatus == CheckBoxStatus.UncheckAll) {
+            data.isCheck = false
+        }
+
         if (data.isCheck) {
-            selectCheckBoxMap[position] = data
+            addItemToSelection(position, data)
         } else {
             removeItemFromSelection(position)
         }
-        onSelectChange(holder.binding as VB, data, position, data.isCheck)
+    }
+
+    protected open fun doWhenInit(data: CB, position: Int, holder: LifecycleOwnerViewBindHolder) {
+        doCheckLogicWhenInit(data, position, holder)
     }
 
     override fun onBindViewHolder(holder: LifecycleOwnerViewBindHolder, position: Int) {
@@ -175,22 +181,35 @@ abstract class CheckBoxPagingAdapter<VB : ViewBinding, CB : IPagingCheckBox>(
 
         val data = getItem(position)
 
-        if (data != null && !data.isInit) {
-            initLogic(data)
-            doAfterInit(data, position, holder)
+        if (data?.isInit == false) {
+            doWhenInit(data, position, holder)
+            //最後改變init值，代表處理過bind，剩下的資料更換邏輯就交給live data
+            data.isInit = true
         }
 
-        //觀察是否被選取，以 view holder 做為生命週期
-        liveSelectCheckBoxMap.observe(holder, Observer {
-            if (data != null) {
-                val isSelect = isItemSelected(position)
-                onSelectChange(holder.binding as VB, data, position, isSelect)
-            }
-        })
-
-        //最後改變init值，代表處理過bind，剩下的資料更換邏輯就交給live data
-        data?.isInit = true
+        doObserveDataChange(holder)
     }
 
-    abstract fun onSelectChange(binding: VB, item: CB, position: Int, isSelect: Boolean)
+    protected open fun doObserveDataChange(holder: LifecycleOwnerViewBindHolder) {
+        observeCheckboxStatus(holder)
+    }
+
+    private fun observeCheckboxStatus(holder: LifecycleOwnerViewBindHolder) {
+        //觀察是否被選取，以 view holder 做為生命週期
+        liveSelectCheckBoxMap.observe(holder) {
+            val newPosition = holder.adapterPosition
+            if (newPosition == RecyclerView.NO_POSITION) return@observe
+            val selectByMapData = getItem(newPosition)
+            if (selectByMapData != null) {
+                val isSelect = isItemSelected(newPosition)
+                onCheckboxChange(holder.binding as VB, selectByMapData, newPosition, isSelect)
+            }
+        }
+    }
+
+    abstract fun onCheckboxChange(binding: VB, item: CB, position: Int, isSelect: Boolean)
+
+    private enum class CheckBoxStatus {
+        Normal, CheckAll, UncheckAll
+    }
 }

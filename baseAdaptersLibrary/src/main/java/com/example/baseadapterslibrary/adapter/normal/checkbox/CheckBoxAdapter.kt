@@ -27,20 +27,18 @@ abstract class CheckBoxAdapter<VB : ViewBinding, CB : ICheckBox> : BaseRvAdapter
 
     protected var selectCheckBoxMultiHaveSortMap = mutableMapOf<RealDataPosition, SortListIndex>()
 
-    override suspend fun updateDataSet(newDataSet: MutableList<CB>) {
-
+    override suspend fun updateDataAction(newDataSet: MutableList<CB>) {
         selectCheckBoxMap.clear()
         selectCheckBoxMultiHaveSortList.clear()
         selectCheckBoxMultiHaveSortMap.clear()
 
-        updateDataAction(newDataSet)
+        super.updateDataAction(newDataSet)
 
         for (i in newDataSet.indices) {
             if (newDataSet[i].isCheck) {
                 addSelectItem(i)
             }
         }
-
     }
 
     protected open fun modifyData(position: Int, data: CB) {
